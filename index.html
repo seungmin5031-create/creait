@@ -239,12 +239,12 @@
                             </div>
                             <div class="bg-[#0f172a]/60 border border-gray-700/60 rounded-lg p-4">
                                 <p class="text-sm text-gray-400 mb-2">총 예상 매출</p>
-                                <h3 id="overview-total-revenue" class="text-2xl font-bold text-white">₩0만</h3>
+                                <h3 id="overview-total-revenue" class="text-2xl font-bold text-white">₩0.00만</h3>
                                 <p class="text-xs text-gray-500 mt-2">프로젝트 목표 매출 합계</p>
                             </div>
                             <div class="bg-[#0f172a]/60 border border-gray-700/60 rounded-lg p-4">
                                 <p class="text-sm text-gray-400 mb-2">진행 매출</p>
-                                <h3 id="overview-progress-revenue" class="text-2xl font-bold text-emerald-300">₩0만</h3>
+                                <h3 id="overview-progress-revenue" class="text-2xl font-bold text-emerald-300">₩0.00만</h3>
                                 <p class="text-xs text-gray-500 mt-2">진행률 기준 예상 매출</p>
                             </div>
                             <div class="bg-[#0f172a]/60 border border-gray-700/60 rounded-lg p-4">
@@ -296,7 +296,7 @@
                         </div>
                     </div>
                     <div class="glass-panel rounded-xl overflow-hidden border border-gray-700/50">
-                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-[#1e293b]/50 border-b border-gray-700 text-xs font-bold text-gray-400 uppercase"><th class="px-6 py-4">프로젝트명</th><th class="px-6 py-4">클라이언트</th><th class="px-6 py-4">담당자</th><th class="px-6 py-4">마감 기한</th><th class="px-6 py-4">진행률</th><th class="px-6 py-4">총 예산 / 순수익</th><th class="px-6 py-4 text-center">상태</th><th class="px-6 py-4 text-right">관리</th></tr></thead><tbody id="projects-table-body" class="text-sm divide-y divide-gray-700/50"></tbody></table></div>
+                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-[#1e293b]/50 border-b border-gray-700 text-xs font-bold text-gray-400 uppercase"><th class="px-6 py-4">프로젝트명</th><th class="px-6 py-4">클라이언트</th><th class="px-6 py-4">담당자</th><th class="px-6 py-4">마감 기한</th><th class="px-6 py-4">진행률</th><th class="px-6 py-4">총 예산 / 목표 매출</th><th class="px-6 py-4 text-center">상태</th><th class="px-6 py-4 text-right">관리</th></tr></thead><tbody id="projects-table-body" class="text-sm divide-y divide-gray-700/50"></tbody></table></div>
                     </div>
                 </div>
 
@@ -314,8 +314,8 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="glass-panel p-5 rounded-xl border-l-4 border-indigo-500"><p class="text-sm text-gray-400 mb-1">총 예산</p><h3 id="stat-budget" class="text-2xl font-bold text-white">₩0</h3></div>
-                        <div class="glass-panel p-5 rounded-xl border-l-4 border-emerald-500"><p class="text-sm text-gray-400 mb-1">순수익</p><h3 id="stat-revenue" class="text-2xl font-bold text-white">₩0</h3></div>
+                        <div class="glass-panel p-5 rounded-xl border-l-4 border-indigo-500"><p class="text-sm text-gray-400 mb-1">총 예산</p><h3 id="stat-budget" class="text-2xl font-bold text-white">₩0.00만</h3></div>
+                        <div class="glass-panel p-5 rounded-xl border-l-4 border-emerald-500"><p class="text-sm text-gray-400 mb-1">목표 매출</p><h3 id="stat-revenue" class="text-2xl font-bold text-white">₩0</h3></div>
                         <div class="glass-panel p-5 rounded-xl border-l-4 border-amber-500"><p class="text-sm text-gray-400 mb-1">진행중</p><h3 id="stat-inprogress" class="text-2xl font-bold text-white">0건</h3></div>
                         <div class="glass-panel p-5 rounded-xl border-l-4 border-rose-500"><p class="text-sm text-gray-400 mb-1">마감 임박</p><h3 id="stat-urgent" class="text-2xl font-bold text-white">0건</h3></div>
                     </div>
@@ -557,8 +557,8 @@
                             <input type="date" id="detail-date" onchange="updateTaskMeta('date', this.value)" class="w-full bg-transparent text-sm text-gray-200 focus:outline-none dark-date-input">
                         </div>
                         <div class="p-3 rounded-lg bg-[#1e293b] border border-gray-700/50">
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">비용 (만원)</label>
-                            <input type="number" id="detail-cost" onchange="updateTaskMeta('cost', this.value)" class="w-full bg-transparent text-sm text-gray-200 focus:outline-none" placeholder="0">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">비용 (원)</label>
+                            <input type="number" id="detail-cost" step="1" min="0" onchange="updateTaskMeta('cost', this.value)" class="w-full bg-transparent text-sm text-gray-200 focus:outline-none" placeholder="0">
                         </div>
                         <div class="p-3 rounded-lg bg-[#1e293b] border border-gray-700/50">
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">우선순위</label>
@@ -636,8 +636,8 @@
                             </div>
                         </div>
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-400 mb-1">비용 (만원)</label>
-                            <input type="number" id="taskCostInput" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="0">
+                            <label class="block text-sm font-medium text-gray-400 mb-1">비용 (원)</label>
+                            <input type="number" id="taskCostInput" step="1" min="0" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="0">
                         </div>
                         <div class="flex justify-end gap-3">
                             <button type="button" onclick="closeTaskModal()" class="px-4 py-2 text-gray-400 hover:text-gray-200">취소</button>
@@ -717,7 +717,7 @@
             </div>
         </div>
 
-        <div id="projectModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div class="bg-[#1e293b] border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"><div class="flex justify-between items-center p-6 border-b border-gray-700 flex-shrink-0"><h3 id="projModalTitle" class="text-lg font-bold text-gray-100">새 프로젝트 생성</h3><button onclick="closeProjectModal()" class="text-gray-500 hover:text-gray-300"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="p-6 overflow-y-auto flex-1 custom-scrollbar"><form id="projectForm" onsubmit="handleProjectSubmit(event)"><div class="grid grid-cols-2 gap-4 mb-4"><div class="col-span-2"><label class="block text-sm font-medium text-gray-400 mb-1">프로젝트명</label><input type="text" id="projTitle" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div class="col-span-2"><label class="block text-sm font-medium text-gray-400 mb-1">담당자 (PM)</label><select id="projManager" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"><option value="변PD">변PD (기본)</option></select></div></div><div class="mb-6 bg-[#0f172a]/50 p-4 rounded-lg border border-gray-700/50"><label class="block text-sm font-medium text-indigo-400 mb-3">현재 진행 상태</label><div class="grid grid-cols-4 gap-2"><input type="radio" name="status" id="status-plan" value="기획" class="hidden status-radio" checked><label for="status-plan" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">🌱 기획</label><input type="radio" name="status" id="status-progress" value="진행중" class="hidden status-radio"><label for="status-progress" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">🚀 진행중</label><input type="radio" name="status" id="status-done" value="완료" class="hidden status-radio"><label for="status-done" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">🎉 완료</label><input type="radio" name="status" id="status-hold" value="보류" class="hidden status-radio"><label for="status-hold" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">⏸ 보류</label></div></div><div class="mb-4"><label class="block text-sm font-medium text-gray-400 mb-1">마감 기한 (D-Day)</label><input type="date" id="projDeadline" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none dark-date-input"></div><div class="border-t border-gray-700 my-4 pt-4"><h4 class="text-sm font-bold text-gray-300 mb-3">클라이언트 정보</h4><div class="grid grid-cols-2 gap-4"><div class="col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">회사명</label><input type="text" id="clientCompany" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div><label class="block text-xs font-medium text-gray-500 mb-1">담당자명</label><input type="text" id="clientName" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div><label class="block text-xs font-medium text-gray-500 mb-1">연락처</label><input type="text" id="clientContact" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div></div></div><div class="grid grid-cols-2 gap-4 mb-4 pt-2"><div><label class="block text-sm font-medium text-gray-400 mb-1">예산 (만원)</label><input type="number" id="projBudget" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div><label class="block text-sm font-medium text-gray-400 mb-1">목표 매출 (만원)</label><input type="number" id="projRevenue" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div></div><div class="mb-6 flex items-center gap-2"><input type="checkbox" id="projVat" class="w-4 h-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-[#0f172a]"><label for="projVat" class="text-xs text-gray-400 select-none cursor-pointer">VAT 별도 (체크 시 별도)</label></div><div class="mb-4"><label class="block text-sm font-medium text-gray-400 mb-1">테마 컬러</label><div class="flex gap-2"><button type="button" onclick="selectColor('indigo')" class="w-8 h-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-indigo-400 color-btn" data-color="indigo"></button><button type="button" onclick="selectColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-emerald-400 color-btn" data-color="emerald"></button><button type="button" onclick="selectColor('rose')" class="w-8 h-8 rounded-full bg-rose-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-rose-400 color-btn" data-color="rose"></button><button type="button" onclick="selectColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-amber-400 color-btn" data-color="amber"></button></div><input type="hidden" id="projColor" value="indigo"></div><div id="projDates" class="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center"></div><div class="flex justify-end gap-3 pt-2 mt-2"><button type="button" onclick="closeProjectModal()" class="px-4 py-2 text-gray-400 hover:text-gray-200">취소</button><button type="submit" id="projSubmitBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold">저장</button></div></form></div></div></div>
+        <div id="projectModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div class="bg-[#1e293b] border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"><div class="flex justify-between items-center p-6 border-b border-gray-700 flex-shrink-0"><h3 id="projModalTitle" class="text-lg font-bold text-gray-100">새 프로젝트 생성</h3><button onclick="closeProjectModal()" class="text-gray-500 hover:text-gray-300"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="p-6 overflow-y-auto flex-1 custom-scrollbar"><form id="projectForm" onsubmit="handleProjectSubmit(event)"><div class="grid grid-cols-2 gap-4 mb-4"><div class="col-span-2"><label class="block text-sm font-medium text-gray-400 mb-1">프로젝트명</label><input type="text" id="projTitle" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div class="col-span-2"><label class="block text-sm font-medium text-gray-400 mb-1">담당자 (PM)</label><select id="projManager" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"><option value="변PD">변PD (기본)</option></select></div></div><div class="mb-6 bg-[#0f172a]/50 p-4 rounded-lg border border-gray-700/50"><label class="block text-sm font-medium text-indigo-400 mb-3">현재 진행 상태</label><div class="grid grid-cols-4 gap-2"><input type="radio" name="status" id="status-plan" value="기획" class="hidden status-radio" checked><label for="status-plan" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">🌱 기획</label><input type="radio" name="status" id="status-progress" value="진행중" class="hidden status-radio"><label for="status-progress" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">🚀 진행중</label><input type="radio" name="status" id="status-done" value="완료" class="hidden status-radio"><label for="status-done" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">🎉 완료</label><input type="radio" name="status" id="status-hold" value="보류" class="hidden status-radio"><label for="status-hold" class="cursor-pointer text-center py-2 rounded-lg border border-gray-600 text-xs text-gray-400 hover:bg-gray-700 transition-all font-bold">⏸ 보류</label></div></div><div class="mb-4"><label class="block text-sm font-medium text-gray-400 mb-1">마감 기한 (D-Day)</label><input type="date" id="projDeadline" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none dark-date-input"></div><div class="border-t border-gray-700 my-4 pt-4"><h4 class="text-sm font-bold text-gray-300 mb-3">클라이언트 정보</h4><div class="grid grid-cols-2 gap-4"><div class="col-span-2"><label class="block text-xs font-medium text-gray-500 mb-1">회사명</label><input type="text" id="clientCompany" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div><label class="block text-xs font-medium text-gray-500 mb-1">담당자명</label><input type="text" id="clientName" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div><label class="block text-xs font-medium text-gray-500 mb-1">연락처</label><input type="text" id="clientContact" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div></div></div><div class="grid grid-cols-2 gap-4 mb-4 pt-2"><div><label class="block text-sm font-medium text-gray-400 mb-1">예산 (원)</label><input type="text" id="projBudget" inputmode="numeric" pattern="[0-9,]*" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div><div><label class="block text-sm font-medium text-gray-400 mb-1">목표 매출 (원)</label><input type="text" id="projRevenue" inputmode="numeric" pattern="[0-9,]*" required class="w-full px-4 py-2 bg-[#0f172a] border border-gray-700 rounded-lg text-gray-100"></div></div><div class="mb-6 flex items-center gap-2"><input type="checkbox" id="projVat" class="w-4 h-4 rounded border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-[#0f172a]"><label for="projVat" class="text-xs text-gray-400 select-none cursor-pointer">VAT 별도 (체크 시 별도)</label></div><div class="mb-4"><label class="block text-sm font-medium text-gray-400 mb-1">테마 컬러</label><div class="flex gap-2"><button type="button" onclick="selectColor('indigo')" class="w-8 h-8 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-indigo-400 color-btn" data-color="indigo"></button><button type="button" onclick="selectColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-emerald-400 color-btn" data-color="emerald"></button><button type="button" onclick="selectColor('rose')" class="w-8 h-8 rounded-full bg-rose-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-rose-400 color-btn" data-color="rose"></button><button type="button" onclick="selectColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-offset-slate-800 ring-transparent hover:ring-amber-400 color-btn" data-color="amber"></button></div><input type="hidden" id="projColor" value="indigo"></div><div id="projDates" class="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center"></div><div class="flex justify-end gap-3 pt-2 mt-2"><button type="button" onclick="closeProjectModal()" class="px-4 py-2 text-gray-400 hover:text-gray-200">취소</button><button type="submit" id="projSubmitBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold">저장</button></div></form></div></div></div>
         
         <!-- AI Report Modal (Same) -->
         <div id="aiAnalysisModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div class="bg-[#1e293b] border border-gray-700 rounded-xl shadow-2xl w-full max-w-2xl h-[85vh] flex flex-col"><div class="flex justify-between items-center p-6 border-b border-gray-700 flex-shrink-0"><div class="flex items-center gap-2"><i class="fa-solid fa-robot text-indigo-400 text-xl"></i><h3 class="text-xl font-bold text-gray-100">AI 프로젝트 리포트</h3></div><button onclick="closeAiAnalysisModal()" class="text-gray-500 hover:text-gray-300"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="p-8 overflow-y-auto flex-1 relative"><div id="ai-report-loading" class="absolute inset-0 bg-[#1e293b] flex flex-col items-center justify-center z-10"><div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div><p class="text-indigo-400 font-medium animate-pulse text-lg">분석 중...</p></div><div id="ai-report-content" class="markdown-body"></div></div><div class="p-6 border-t border-gray-700 bg-[#0f172a]/50 rounded-b-xl flex justify-end"><button onclick="closeAiAnalysisModal()" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium">닫기</button></div></div></div>
@@ -901,12 +901,23 @@
 
         function init() {
             applyPreferences();
+            setupProjectMoneyInputs();
             const isLoggedIn = localStorage.getItem(STORAGE_KEY_LOGIN);
             if (isLoggedIn === 'true') {
                 showApp();
             } else {
                 showLogin();
             }
+        }
+
+        function setupProjectMoneyInputs() {
+            const budgetInput = document.getElementById('projBudget');
+            const revenueInput = document.getElementById('projRevenue');
+            [budgetInput, revenueInput].forEach(input => {
+                if (!input) return;
+                input.addEventListener('input', () => formatCommaInput(input));
+                input.addEventListener('blur', () => formatCommaInput(input));
+            });
         }
 
         // --- Function Hoisting (Declarations) ---
@@ -990,6 +1001,23 @@
         }
 
         function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+        function formatMoney(value) {
+            const num = Number(value) || 0;
+            return `₩${Math.round(num).toLocaleString('ko-KR')}`;
+        }
+        function formatCommaInput(input) {
+            if (!input) return;
+            const raw = input.value.replace(/[^\d]/g, '');
+            if (!raw) {
+                input.value = '';
+                return;
+            }
+            input.value = Number(raw).toLocaleString('ko-KR');
+        }
+        function parseMoneyInput(value) {
+            const raw = String(value || '').replace(/[^\d]/g, '');
+            return raw ? parseInt(raw, 10) : 0;
+        }
         function getAvatarColor(name) {
             if (name === 'Me' || name === '변PD') return 'bg-indigo-500/20 text-indigo-300';
             return 'bg-gray-700 text-gray-300';
@@ -1042,8 +1070,8 @@
                 `**마감 임박**: ${urgent}건`,
                 ``,
                 `## 예산`,
-                `- 사용 예산: ₩${used.toLocaleString()}만`,
-                `- 잔여 예산: ₩${remain.toLocaleString()}만`,
+                `- 사용 예산: ${formatMoney(used)}`,
+                `- 잔여 예산: ${formatMoney(remain)}`,
                 ``,
                 `## 다음 액션`,
                 `- 진행중 업무의 리스크/지연 사유 확인`,
@@ -1127,7 +1155,10 @@
                 const active = p.id === activeProjectId ? 'bg-white/5 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200';
                 const d = document.createElement('div'); 
                 d.className = `flex items-center gap-3 px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors ${active}`;
-                d.onclick = () => { switchProject(p.id); };
+                d.onclick = () => {
+                    switchProject(p.id);
+                    if (activeView === 'overview') switchView('board');
+                };
                 d.innerHTML = `<div class="overflow-hidden text-ellipsis whitespace-nowrap">${p.title}</div>`;
                 c.appendChild(d);
             });
@@ -1162,9 +1193,10 @@
             const budget = Number(p.budget) || 0; 
             const used = t.reduce((acc, curr) => acc + (Number(curr.cost) || 0), 0);
             const profit = budget - used;
+            const revenue = Number(p.revenue) || 0;
 
-            setText('stat-budget', `₩${budget.toLocaleString()}만`); 
-            setText('stat-revenue', `₩${profit.toLocaleString()}만`); 
+            setText('stat-budget', formatMoney(budget)); 
+            setText('stat-revenue', formatMoney(revenue)); 
             setText('stat-inprogress', `${t.filter(x=>x.status==='inprogress').length}건`);
             const today = new Date(); const urgent = t.filter(x => { const d = new Date(x.date); const diff = (d - today) / (1000 * 60 * 60 * 24); return diff >= 0 && diff <= 3 && x.status !== 'done'; }).length;
             setText('stat-urgent', `${urgent}건`);
@@ -1187,7 +1219,7 @@
                             borderColor: '#1e293b', borderWidth: 2 
                         }] 
                     }, 
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: "'Noto Sans KR', sans-serif" }, padding: 20 } }, tooltip: { callbacks: { label: function(context) { return ' ' + context.label + ': ₩' + context.raw.toLocaleString() + '만'; } } } }, cutout: '70%' } 
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: "'Noto Sans KR', sans-serif" }, padding: 20 } }, tooltip: { callbacks: { label: function(context) { return ' ' + context.label + ': ' + formatMoney(context.raw); } } } }, cutout: '70%' } 
                 });
             }
             // Calendar
@@ -1314,8 +1346,8 @@
             setText('overview-progress-percent', `${totalProgress}%`);
             setText('overview-done-count', doneCount);
             setText('overview-task-count', totalTasks);
-            setText('overview-total-revenue', `₩${totalRevenue.toLocaleString()}만`);
-            setText('overview-progress-revenue', `₩${Math.round(progressRevenue).toLocaleString()}만`);
+            setText('overview-total-revenue', formatMoney(totalRevenue));
+            setText('overview-progress-revenue', formatMoney(progressRevenue));
             setText('overview-project-count', `${projects.length}개`);
             setText('overview-active-projects', activeProjects);
             setText('overview-last-updated', lastUpdatedList[0] || '-');
@@ -1454,8 +1486,7 @@
                 const dotColor = { 'indigo': 'bg-indigo-500', 'emerald': 'bg-emerald-500', 'rose': 'bg-rose-500', 'amber': 'bg-amber-500' }[p.color] || 'bg-gray-500';
                 const statusColor = { '기획': 'text-gray-400 border-gray-600 bg-gray-500/10', '진행중': 'text-indigo-400 border-indigo-500/50 bg-indigo-500/10', '완료': 'text-emerald-400 border-emerald-500/50 bg-emerald-500/10', '보류': 'text-amber-400 border-amber-500/50 bg-amber-500/10', '검토': 'text-orange-400 border-orange-500/50 bg-orange-500/10' }[p.status] || 'text-gray-400 border-gray-600';
 
-                const used = pTasks.reduce((acc, curr) => acc + (Number(curr.cost) || 0), 0);
-                const profit = (Number(p.budget) || 0) - used;
+                const revenue = Number(p.revenue) || 0;
 
                 tr.innerHTML = `
                     <td class="px-6 py-4"><div class="flex items-center gap-3"><span class="font-bold text-gray-200">${p.title}</span></div></td>
@@ -1463,7 +1494,7 @@
                     <td class="px-6 py-4"><span class="text-gray-300 font-medium">${p.manager || '-'}</span></td>
                     <td class="px-6 py-4"><div class="flex flex-col"><span class="text-xs ${ddayClass} font-bold">${ddayText}</span><span class="text-[10px] text-gray-500">${p.deadline || ''}</span></div></td>
                     <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="flex-1 w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden"><div class="h-full bg-indigo-500" style="width: ${percent}%"></div></div><span class="text-xs text-gray-400 w-8 text-right">${percent}%</span></div></td>
-                    <td class="px-6 py-4"><div class="flex flex-col text-xs"><span class="text-gray-300">₩${(p.budget||0).toLocaleString()}만</span><span class="text-emerald-400">₩${profit.toLocaleString()}만</span></div></td>
+                    <td class="px-6 py-4"><div class="flex flex-col text-xs"><span class="text-gray-300">${formatMoney(p.budget || 0)}</span><span class="text-emerald-400">${formatMoney(revenue)}</span></div></td>
                     <td class="px-6 py-4 text-center"><span class="px-2 py-0.5 rounded text-xs border ${statusColor}">${p.status}</span></td>
                     <td class="px-6 py-4 text-right"><button onclick="event.stopPropagation(); activeProjectId='${p.id}'; openProjectModal('edit')" class="text-gray-500 hover:text-indigo-400 p-1"><i class="fa-solid fa-pen-to-square"></i></button></td>
                 `;
@@ -1562,7 +1593,7 @@
             div.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', task.id); div.classList.add('dragging'); });
             div.addEventListener('dragend', () => { div.classList.remove('dragging'); document.querySelectorAll('.column-drop-zone').forEach(z => z.classList.remove('drag-over')); });
             const costValue = Number(task.cost) || 0;
-            const costBadge = costValue > 0 ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-emerald-400">₩${costValue}만</span>` : '';
+            const costBadge = costValue > 0 ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700 text-emerald-400">${formatMoney(costValue)}</span>` : '';
             div.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex gap-1"><span class="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-400">${task.tag}</span>${costBadge}</div><button onclick="deleteTask('${task.id}', event)" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button></div><h4 class="font-bold text-gray-200 mb-1 text-sm leading-tight">${task.title}</h4><div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-700/50"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold border border-white/10 ${ac}">${assigneeName.substring(0,1)}</div></div><span class="text-[10px] ${dDayClass}"><i class="fa-regular fa-clock mr-1"></i>${dDay}</span></div>`;
             return div;
         }
@@ -1920,7 +1951,7 @@
             const formData = {
                 title: document.getElementById('taskTitle').value, desc: document.getElementById('taskDescInput').value, date: document.getElementById('taskDateNone').checked ? '' : document.getElementById('taskDateInput').value,
                 tag: document.getElementById('taskTagInput').value, priority: document.getElementById('taskPriorityInput').value, assignee: document.getElementById('taskAssigneeInput').value,
-                cost: parseInt(document.getElementById('taskCostInput').value) || 0
+                cost: parseInt(document.getElementById('taskCostInput').value, 10) || 0
             };
             if (currentEditTaskId) {
                 const idx = tasks.findIndex(t => t.id === currentEditTaskId); tasks[idx] = { ...tasks[idx], ...formData };
@@ -1983,7 +2014,11 @@
             if (!activeTaskDetailId) return;
             const idx = tasks.findIndex(t => t.id === activeTaskDetailId);
             if (idx > -1) {
-                tasks[idx][field] = value;
+                if (field === 'cost') {
+                    tasks[idx][field] = parseInt(value, 10) || 0;
+                } else {
+                    tasks[idx][field] = value;
+                }
                 saveData();
                 renderBoard();
             }
@@ -2236,11 +2271,15 @@
                  document.getElementById('clientContact').value = p.clientContact; document.getElementById('projBudget').value = p.budget;
                  document.getElementById('projRevenue').value = p.revenue; document.getElementById('projVat').checked = p.vat || false;
                  document.getElementById('projDeadline').value = p.deadline || '';
+                 formatCommaInput(document.getElementById('projBudget'));
+                 formatCommaInput(document.getElementById('projRevenue'));
                  const radios = document.getElementsByName('status'); for(const r of radios) { if(r.value === p.status) r.checked = true; }
                  datesEl.innerHTML = `생성일: ${p.createdAt || '-'}  |  최근 수정일: ${p.updatedAt || '-'}`; selectColor(p.color);
              } else {
                  currentEditProjId = null; t.textContent = '새 프로젝트 생성'; b.textContent = '생성하기'; f.reset(); 
                  document.getElementById('projManager').value = '변PD'; document.getElementById('status-plan').checked = true;
+                 document.getElementById('projBudget').value = '';
+                 document.getElementById('projRevenue').value = '';
                  datesEl.innerHTML = ''; selectColor('indigo');
              }
         }
@@ -2254,8 +2293,8 @@
             const d = { 
                 title: document.getElementById('projTitle').value, manager: document.getElementById('projManager').value, 
                 clientCompany: document.getElementById('clientCompany').value, clientName: document.getElementById('clientName').value, 
-                clientContact: document.getElementById('clientContact').value, budget: parseInt(document.getElementById('projBudget').value), 
-                revenue: parseInt(document.getElementById('projRevenue').value), color: document.getElementById('projColor').value, 
+                clientContact: document.getElementById('clientContact').value, budget: parseMoneyInput(document.getElementById('projBudget').value), 
+                revenue: parseMoneyInput(document.getElementById('projRevenue').value), color: document.getElementById('projColor').value, 
                 status: selectedStatus, vat: document.getElementById('projVat').checked, deadline: document.getElementById('projDeadline').value, updatedAt: now 
             };
             if (currentEditProjId) { const i = projects.findIndex(p => p.id === currentEditProjId); if (i > -1) { projects[i] = { ...projects[i], ...d }; } } 
@@ -2285,6 +2324,29 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+    </script>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyDZ7nWpy6E-daoGf_DjeppdcZEdJStDoQM",
+        authDomain: "creait-project-plan.firebaseapp.com",
+        projectId: "creait-project-plan",
+        storageBucket: "creait-project-plan.firebasestorage.app",
+        messagingSenderId: "843527621754",
+        appId: "1:843527621754:web:19b2d3085c2443080e3fc3",
+        measurementId: "G-M055KHXXE9"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
     </script>
 </body>
 </html>
