@@ -829,6 +829,8 @@
         const STORAGE_KEY_LOGIN = 'plug_is_logged_in';
         const STORAGE_KEY_COMPANY = 'plug_company_name';
         const STORAGE_KEY_THEME = 'plug_theme';
+        const STORAGE_KEY_CURRENCY_MIGRATED = 'plug_currency_migrated_to_won';
+        const STORAGE_KEY_REVENUE_RANDOMIZED = 'plug_revenue_randomized_50m';
 
         function safeParse(key) {
             try {
@@ -886,6 +888,52 @@
             }
         });
         if (didNormalizeContacts) localStorage.setItem(STORAGE_KEY_CONTACTS, JSON.stringify(contacts));
+
+        function migrateCurrencyToWon() {
+            if (localStorage.getItem(STORAGE_KEY_CURRENCY_MIGRATED) === 'true') return;
+            projects.forEach(p => {
+                const budget = Number(p.budget);
+                const revenue = Number(p.revenue);
+                if (Number.isFinite(budget)) p.budget = Math.round(budget * 10000);
+                if (Number.isFinite(revenue)) p.revenue = Math.round(revenue * 10000);
+            });
+            tasks.forEach(t => {
+                const cost = Number(t.cost);
+                if (Number.isFinite(cost)) t.cost = Math.round(cost * 10000);
+            });
+            localStorage.setItem(STORAGE_KEY_PROJS, JSON.stringify(projects));
+            localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+            localStorage.setItem(STORAGE_KEY_CURRENCY_MIGRATED, 'true');
+        }
+
+        migrateCurrencyToWon();
+
+        function randomizeRevenueToTotal(total) {
+            if (!projects.length) return;
+            const weights = projects.map(() => Math.random() + 0.1);
+            const sum = weights.reduce((acc, w) => acc + w, 0);
+            let assignedTotal = 0;
+            const allocations = weights.map(w => {
+                const value = Math.floor((w / sum) * total);
+                assignedTotal += value;
+                return value;
+            });
+            let remainder = total - assignedTotal;
+            while (remainder > 0) {
+                const idx = Math.floor(Math.random() * allocations.length);
+                allocations[idx] += 1;
+                remainder -= 1;
+            }
+            projects.forEach((p, idx) => {
+                p.revenue = allocations[idx];
+            });
+            saveData();
+            localStorage.setItem(STORAGE_KEY_REVENUE_RANDOMIZED, 'true');
+        }
+
+        if (localStorage.getItem(STORAGE_KEY_REVENUE_RANDOMIZED) !== 'true') {
+            randomizeRevenueToTotal(50000000);
+        }
 
         let activeProjectId = projects[0]?.id || null;
         let activeView = 'overview'; 
