@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/CREAIT.html" },
-    { "source": "/works", "destination": "/works.html" }
+    { "source": "/works", "destination": "/works.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }

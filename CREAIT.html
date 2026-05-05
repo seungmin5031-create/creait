@@ -1327,6 +1327,130 @@ section { padding: 120px 0; }
   border: 0;
   display: block;
 }
+.modal-gallery-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  opacity: 0;
+  pointer-events: none;
+  background: #050505;
+  transition: opacity 0.25s ease;
+}
+.modal-gallery-stage {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 86px 92px 28px;
+}
+.modal-gallery-figure {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-gallery-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.42);
+}
+.modal-gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(8,8,8,0.62);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255,255,255,0.92);
+  font-size: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+.modal-gallery-nav.prev { left: 24px; }
+.modal-gallery-nav.next { right: 24px; }
+.modal-gallery-nav:hover:not(:disabled) {
+  background: rgba(232,255,0,0.16);
+  border-color: rgba(232,255,0,0.32);
+  color: var(--accent);
+}
+.modal-gallery-nav:disabled {
+  opacity: 0.28;
+  pointer-events: none;
+}
+.modal-gallery-bottom {
+  position: relative;
+  z-index: 2;
+  padding: 16px 20px 18px;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.28) 12%, rgba(6,6,6,0.88) 48%, rgba(5,5,5,0.98) 100%);
+}
+.modal-gallery-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(16,16,16,0.42);
+  color: rgba(255,255,255,0.88);
+  font-family: var(--font-en);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.modal-gallery-strip {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.modal-gallery-strip::-webkit-scrollbar {
+  display: none;
+}
+.modal-gallery-thumb {
+  flex: 0 0 88px;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #101010;
+  opacity: 0.48;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.modal-gallery-thumb:hover {
+  opacity: 0.82;
+}
+.modal-gallery-thumb.active {
+  opacity: 1;
+  border-color: rgba(232,255,0,0.44);
+  box-shadow: 0 0 0 1px rgba(232,255,0,0.2);
+  transform: translateY(-2px);
+}
+.modal-gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
 .modal-play {
   position: absolute;
   top: 50%; left: 50%;
@@ -1580,6 +1704,21 @@ section { padding: 120px 0; }
   pointer-events: auto;
   cursor: default;
 }
+.modal-video.gallery-mode {
+  cursor: default;
+}
+.modal-video.gallery-mode::after,
+.modal-video.gallery-mode .v-bg,
+.modal-video.gallery-mode .modal-video-frame,
+.modal-video.gallery-mode .modal-play,
+.modal-video.gallery-mode .modal-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+.modal-video.gallery-mode .modal-gallery-frame {
+  opacity: 1;
+  pointer-events: auto;
+}
 @media (max-width: 720px) {
   .modal-controls {
     grid-template-columns: 40px minmax(0, 1fr) auto auto;
@@ -1596,6 +1735,21 @@ section { padding: 120px 0; }
   #modalCtrlMute {
     justify-self: end;
   }
+  .modal-gallery-stage {
+    padding: 84px 64px 18px;
+  }
+  .modal-gallery-nav {
+    width: 46px;
+    height: 46px;
+  }
+  .modal-gallery-nav.prev { left: 16px; }
+  .modal-gallery-nav.next { right: 16px; }
+  .modal-gallery-bottom {
+    padding: 14px 16px 16px;
+  }
+  .modal-gallery-thumb {
+    flex-basis: 78px;
+  }
 }
 @media (max-width: 480px) {
   .modal-ctrl {
@@ -1610,6 +1764,24 @@ section { padding: 120px 0; }
   }
   .modal-timecode {
     font-size: 0.74rem;
+  }
+  .modal-gallery-stage {
+    padding: 82px 52px 16px;
+  }
+  .modal-gallery-image {
+    border-radius: 12px;
+  }
+  .modal-gallery-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+  .modal-gallery-thumb {
+    flex-basis: 66px;
+    border-radius: 10px;
+  }
+  .modal-gallery-counter {
+    font-size: 0.7rem;
   }
 }
 
@@ -2137,6 +2309,19 @@ section { padding: 120px 0; }
     <div class="modal-video">
       <div class="v-bg" id="modalBg"></div>
       <div class="modal-video-frame" id="modalVideoFrame" aria-hidden="true"></div>
+      <div class="modal-gallery-frame" id="modalGalleryFrame" aria-hidden="true">
+        <div class="modal-gallery-stage">
+          <button class="modal-gallery-nav prev" id="modalGalleryPrev" type="button" aria-label="Previous photo">←</button>
+          <figure class="modal-gallery-figure">
+            <img class="modal-gallery-image" id="modalGalleryImage" alt="">
+          </figure>
+          <button class="modal-gallery-nav next" id="modalGalleryNext" type="button" aria-label="Next photo">→</button>
+        </div>
+        <div class="modal-gallery-bottom">
+          <div class="modal-gallery-counter"><span id="modalGalleryCurrent">01</span> / <span id="modalGalleryTotal">00</span></div>
+          <div class="modal-gallery-strip" id="modalGalleryStrip" aria-label="Gallery thumbnails"></div>
+        </div>
+      </div>
       <div class="modal-tag" id="modalTag">COMMERCIAL</div>
       <button class="modal-play" aria-label="Play video">
         <span class="triangle"></span>
@@ -2415,6 +2600,13 @@ const mPrev = document.getElementById('modalPrev');
 const mNext = document.getElementById('modalNext');
 const mBg = document.getElementById('modalBg');
 const mFrame = document.getElementById('modalVideoFrame');
+const mGalleryFrame = document.getElementById('modalGalleryFrame');
+const mGalleryImage = document.getElementById('modalGalleryImage');
+const mGalleryPrevBtn = document.getElementById('modalGalleryPrev');
+const mGalleryNextBtn = document.getElementById('modalGalleryNext');
+const mGalleryCurrent = document.getElementById('modalGalleryCurrent');
+const mGalleryTotal = document.getElementById('modalGalleryTotal');
+const mGalleryStrip = document.getElementById('modalGalleryStrip');
 const mTag = document.getElementById('modalTag');
 const mClient = document.getElementById('modalClient');
 const mTitle = document.getElementById('modalTitle');
@@ -2435,6 +2627,8 @@ let youtubeApiPromise = null;
 let playerUiTimer = 0;
 let controlsHideTimer = 0;
 let isSeeking = false;
+let currentGallery = [];
+let currentGalleryIndex = 0;
 const catLabels = { commercial: 'COMMERCIAL', brand: 'BRAND FILM', mv: 'MUSIC VIDEO', promotion: 'PROMOTION', drama: 'WEB DRAMA', motion: 'MOTION GRAPHICS', youtube: 'YOUTUBE' };
 const bgGradients = {
   'bg-1': 'radial-gradient(ellipse at 70% 30%, rgba(232,255,0,0.12), transparent 50%), linear-gradient(135deg, #1a1a2e, #16213e 70%, #0a0a0a)',
@@ -2524,6 +2718,74 @@ function parseDurationLabel(label) {
   const parts = String(label).replace(/\+$/, '').split(':').map((part) => Number(part));
   if (parts.some((part) => Number.isNaN(part))) return 0;
   return parts.reduce((sum, part) => sum * 60 + part, 0);
+}
+
+function hasGalleryContent(item) {
+  return Array.isArray(item?.gallery) && item.gallery.length > 0;
+}
+
+function resetGallery() {
+  currentGallery = [];
+  currentGalleryIndex = 0;
+  mVideo.classList.remove('gallery-mode');
+  mGalleryFrame.setAttribute('aria-hidden', 'true');
+  mGalleryImage.removeAttribute('src');
+  mGalleryImage.alt = '';
+  mGalleryCurrent.textContent = '01';
+  mGalleryTotal.textContent = '00';
+  mGalleryStrip.innerHTML = '';
+  mGalleryPrevBtn.disabled = true;
+  mGalleryNextBtn.disabled = true;
+}
+
+function buildGalleryStrip(title) {
+  mGalleryStrip.innerHTML = currentGallery.map((src, index) => `
+    <button
+      class="modal-gallery-thumb${index === currentGalleryIndex ? ' active' : ''}"
+      type="button"
+      data-gallery-index="${index}"
+      aria-label="${title} photo ${index + 1}"
+    >
+      <img src="${src}" alt="${title} thumbnail ${index + 1}" loading="lazy">
+    </button>
+  `).join('');
+}
+
+function syncGalleryThumbs() {
+  const thumbs = Array.from(mGalleryStrip.querySelectorAll('.modal-gallery-thumb'));
+  thumbs.forEach((thumb, index) => {
+    const isActive = index === currentGalleryIndex;
+    thumb.classList.toggle('active', isActive);
+    if (isActive) thumb.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  });
+}
+
+function renderGallerySlide(index) {
+  if (!currentGallery.length) return;
+
+  currentGalleryIndex = Math.max(0, Math.min(index, currentGallery.length - 1));
+  mGalleryImage.src = currentGallery[currentGalleryIndex];
+  mGalleryImage.alt = `${modalData[currentIdx]?.title || 'Gallery image'} ${currentGalleryIndex + 1}`;
+  mGalleryCurrent.textContent = String(currentGalleryIndex + 1).padStart(2, '0');
+  mGalleryTotal.textContent = String(currentGallery.length).padStart(2, '0');
+  mGalleryPrevBtn.disabled = currentGalleryIndex === 0;
+  mGalleryNextBtn.disabled = currentGalleryIndex === currentGallery.length - 1;
+  syncGalleryThumbs();
+}
+
+function activateGallery(item) {
+  currentGallery = Array.isArray(item.gallery) ? item.gallery : [];
+  currentGalleryIndex = 0;
+
+  if (!currentGallery.length) {
+    resetGallery();
+    return;
+  }
+
+  mVideo.classList.add('gallery-mode');
+  mGalleryFrame.setAttribute('aria-hidden', 'false');
+  buildGalleryStrip(item.title);
+  renderGallerySlide(0);
 }
 
 function setSeekVisual(value, max = Number(mSeek.max) || 0) {
@@ -2819,6 +3081,7 @@ function toggleModalFullscreen() {
 }
 
 function handleVideoSurfaceClick(event) {
+  if (mVideo.classList.contains('gallery-mode')) return;
   if (event.target.closest('.modal-controls') || event.target.closest('.modal-play')) return;
   if (!currentVideoUrl) return;
   togglePlayerPlayback();
@@ -2827,9 +3090,12 @@ function handleVideoSurfaceClick(event) {
 function renderModal(i) {
   const d = modalData[i];
   if (!d) return;
+
   stopModalVideo();
+  resetGallery();
   currentIdx = i;
-  currentVideoUrl = d.videoUrl || '';
+  const isGallery = hasGalleryContent(d);
+  currentVideoUrl = isGallery ? '' : d.videoUrl || '';
   mBg.style.background = d.thumb
     ? `linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.45)), url('${d.thumb}') center/cover no-repeat`
     : bgGradients[d.bg];
@@ -2837,11 +3103,12 @@ function renderModal(i) {
   mClient.textContent = d.client;
   mTitle.textContent = d.title;
   mYear.textContent = d.year;
-  mDur.textContent = 'Duration · ' + d.duration;
-  mFmt.textContent = d.format;
+  mDur.textContent = isGallery ? `Gallery · ${d.gallery.length} Photos` : 'Duration · ' + d.duration;
+  mFmt.textContent = isGallery ? 'Photo Gallery' : d.format;
   mDesc.textContent = d.desc;
   mPlay.disabled = !currentVideoUrl;
   resetPlayerUi(parseDurationLabel(d.duration));
+  if (isGallery) activateGallery(d);
   mCurrent.textContent = String(i + 1).padStart(2, '0');
   mCredits.innerHTML = Object.entries(d.credits)
     .map(([k, v]) => `<div class="credit-row"><div class="label">${k}</div><div class="value">${v}</div></div>`)
@@ -2865,6 +3132,7 @@ function closeModal() {
     }
   }
   stopModalVideo();
+  resetGallery();
   backdrop.classList.remove('open');
   backdrop.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
@@ -2914,6 +3182,13 @@ mSeek.addEventListener('change', () => {
   updatePlayerUi();
   showPlayerControls(true);
 });
+mGalleryPrevBtn.addEventListener('click', () => renderGallerySlide(currentGalleryIndex - 1));
+mGalleryNextBtn.addEventListener('click', () => renderGallerySlide(currentGalleryIndex + 1));
+mGalleryStrip.addEventListener('click', (event) => {
+  const thumb = event.target.closest('[data-gallery-index]');
+  if (!thumb) return;
+  renderGallerySlide(Number(thumb.dataset.galleryIndex) || 0);
+});
 mClose.addEventListener('click', closeModal);
 backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
 mPrev.addEventListener('click', () => { if (currentIdx > 0) renderModal(currentIdx - 1); });
@@ -2923,6 +3198,17 @@ document.addEventListener('webkitfullscreenchange', syncFullscreenUi);
 document.addEventListener('keydown', (e) => {
   if (!backdrop.classList.contains('open')) return;
   if (e.key === 'Escape') closeModal();
+  if (mVideo.classList.contains('gallery-mode')) {
+    if (e.key === 'ArrowLeft' && currentGalleryIndex > 0) {
+      e.preventDefault();
+      renderGallerySlide(currentGalleryIndex - 1);
+    }
+    if (e.key === 'ArrowRight' && currentGalleryIndex < currentGallery.length - 1) {
+      e.preventDefault();
+      renderGallerySlide(currentGalleryIndex + 1);
+    }
+    return;
+  }
   if (e.key === 'ArrowLeft' && currentIdx > 0) renderModal(currentIdx - 1);
   if (e.key === 'ArrowRight' && currentIdx < modalData.length - 1) renderModal(currentIdx + 1);
   if (e.code === 'Space') {

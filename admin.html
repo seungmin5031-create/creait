@@ -437,6 +437,12 @@ function renderItemCard(item, index) {
         </div>
 
         <div class="field">
+          <label>갤러리 이미지 URL</label>
+          <textarea data-field="gallery" data-format="lines" placeholder="사진형 포트폴리오면 한 줄에 하나씩 입력하세요">${escapeHtml((item.gallery || []).join('\n'))}</textarea>
+          <div class="help">비워두면 영상형 포트폴리오로 동작합니다. 값이 있으면 메인/전체 모달에서 갤러리 모드로 열립니다.</div>
+        </div>
+
+        <div class="field">
           <label>설명</label>
           <textarea data-field="desc">${escapeHtml(item.desc || '')}</textarea>
         </div>
@@ -458,18 +464,46 @@ async function loadItems() {
 
 function readFieldValue(target) {
   if (target.type === 'checkbox') return target.checked;
+  if (target.dataset.format === 'lines') {
+    return target.value
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }
   return target.value;
 }
 
 function updateItemField(index, field, value) {
   const item = state.items[index];
   if (!item) return;
-  item[field] = value;
+  item[field] = field === 'gallery' ? (Array.isArray(value) ? value : []) : value;
   if (field === 'cat' && !item.displayCat) {
     item.displayCat = window.CreaitPortfolioStore.getCategoryLabel(value).toUpperCase();
   }
   if (field === 'client' && item.credits?.Client) {
     item.credits.Client = value;
+  }
+  if (field === 'gallery' && item.credits?.Platform && !item.videoUrl) {
+    item.credits.Platform = item.gallery.length ? 'Gallery' : 'Archive';
+  }
+}
+
+function updateCardPreview(card, item) {
+  const name = card.querySelector('.item-name');
+  if (name) {
+    name.textContent = item.title || `포트폴리오 ${Number(card.dataset.index) + 1}`;
+  }
+
+  const kicker = card.querySelector('.item-kicker');
+  if (kicker) {
+    kicker.textContent = `${item.featured ? 'Featured' : 'Archive'} · ${window.CreaitPortfolioStore.getCategoryLabel(item.cat)}`;
+  }
+
+  const thumbPreview = card.querySelector('[data-thumb-preview]');
+  if (thumbPreview) {
+    thumbPreview.innerHTML = item.thumb
+      ? `<img src="${escapeHtml(item.thumb)}" alt="${escapeHtml(item.title)} thumbnail">`
+      : '';
   }
 }
 
@@ -504,24 +538,27 @@ editorList.addEventListener('input', (event) => {
   const target = event.target;
   const card = target.closest('.item-card');
   if (!card || !target.dataset.field) return;
-  updateItemField(Number(card.dataset.index), target.dataset.field, readFieldValue(target));
-  if (target.dataset.field === 'thumb' || target.dataset.field === 'title' || target.dataset.field === 'client' || target.dataset.field === 'featured' || target.dataset.field === 'cat') {
-    renderEditor();
-  }
+  const index = Number(card.dataset.index);
+  updateItemField(index, target.dataset.field, readFieldValue(target));
+  updateCardPreview(card, state.items[index]);
+  updateStats();
 });
 
 editorList.addEventListener('change', async (event) => {
   const target = event.target;
   const card = target.closest('.item-card');
   if (!card) return;
+  const index = Number(card.dataset.index);
 
   if (target.dataset.field) {
-    updateItemField(Number(card.dataset.index), target.dataset.field, readFieldValue(target));
+    updateItemField(index, target.dataset.field, readFieldValue(target));
+    updateCardPreview(card, state.items[index]);
+    updateStats();
   }
 
   if (target.dataset.action === 'thumb-upload' && target.files?.[0]) {
     try {
-      await uploadThumb(Number(card.dataset.index), target.files[0]);
+      await uploadThumb(index, target.files[0]);
     } catch (error) {
       setAdminStatus(error.message || '썸네일 업로드 중 오류가 발생했습니다.', 'error');
     } finally {
