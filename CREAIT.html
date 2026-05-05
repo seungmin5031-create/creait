@@ -1597,13 +1597,13 @@ section { padding: 120px 0; }
 
     <div class="works-grid" id="worksGrid">
       <!-- 가상 클라이언트 / 프로젝트 -->
-      <article class="work-card fade-up" data-category="commercial">
-        <div class="bg bg-1"></div>
+      <article class="work-card fade-up" data-category="brand">
+        <div class="bg bg-1" style="background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.42)), url('assets/portfolio/kyocharo-tvc-thumb.png') center/cover no-repeat;"></div>
         <div class="play-overlay"><span class="play-pill">PLAY ▶</span></div>
         <div class="overlay">
-          <div class="client">Lumen Mobile</div>
-          <div class="title">Lumen X12 Launch Campaign</div>
-          <div class="cat">COMMERCIAL · 2025</div>
+          <div class="client">교차로신문사</div>
+          <div class="title">취업/알바 TVC</div>
+          <div class="cat">TVC · 2024</div>
         </div>
       </article>
       <article class="work-card fade-up" data-category="brand" style="transition-delay:0.05s">
@@ -2111,10 +2111,12 @@ document.getElementById('contactForm').addEventListener('submit', (e) => {
 /* ============== 포트폴리오 모달 ============== */
 const modalData = [
   {
-    cat: 'commercial', client: 'Lumen Mobile', title: 'Lumen X12 Launch Campaign',
-    year: '2025', duration: '02:45', format: '4K · 16:9', bg: 'bg-1',
-    desc: 'Lumen X12의 출시를 알리는 글로벌 캠페인 영상. 제품의 카메라 성능을 극대화한 시네마틱한 비주얼과 빠른 컷 편집으로 젊은 타겟층의 시선을 사로잡았습니다.',
-    credits: { Director: '김재민', DOP: 'Park J.S.', Editor: '이수아', Color: 'Studio Hue' }
+    cat: 'brand', displayCat: 'TVC', client: '교차로신문사', title: '교차로신문사 취업/알바 TVC',
+    year: '2024', duration: '00:20', format: '16:9', bg: 'bg-1',
+    thumb: 'assets/portfolio/kyocharo-tvc-thumb.png',
+    videoUrl: 'https://www.youtube.com/watch?v=pJUL5xXymcs',
+    desc: '교차로신문사의 취업·알바 서비스를 소개하는 20초 분량의 TVC. 신문 지면과 모바일 화면을 함께 활용해 우리 동네 일자리 정보를 직관적으로 전달합니다.',
+    credits: { Client: '교차로신문사', Service: '취업 · 알바', Platform: 'YouTube', Type: 'TVC' }
   },
   {
     cat: 'brand', client: 'Atelier Hue', title: 'Brand Story 2025 — In Bloom',
@@ -2163,6 +2165,7 @@ const modalData = [
 const cards = Array.from(document.querySelectorAll('.work-card'));
 const backdrop = document.getElementById('modalBackdrop');
 const mClose = document.getElementById('modalClose');
+const mPlay = document.querySelector('.modal-play');
 const mPrev = document.getElementById('modalPrev');
 const mNext = document.getElementById('modalNext');
 const mBg = document.getElementById('modalBg');
@@ -2179,6 +2182,7 @@ const mTotal = document.getElementById('modalTotal');
 mTotal.textContent = String(modalData.length).padStart(2, '0');
 
 let currentIdx = 0;
+let currentVideoUrl = '';
 const catLabels = { commercial: 'COMMERCIAL', brand: 'BRAND FILM', mv: 'MUSIC VIDEO', promotion: 'PROMOTION', drama: 'WEB DRAMA', motion: 'MOTION GRAPHICS' };
 const bgGradients = {
   'bg-1': 'radial-gradient(ellipse at 70% 30%, rgba(232,255,0,0.12), transparent 50%), linear-gradient(135deg, #1a1a2e, #16213e 70%, #0a0a0a)',
@@ -2195,14 +2199,19 @@ function renderModal(i) {
   const d = modalData[i];
   if (!d) return;
   currentIdx = i;
-  mBg.style.background = bgGradients[d.bg];
-  mTag.textContent = catLabels[d.cat] || d.cat.toUpperCase();
+  currentVideoUrl = d.videoUrl || '';
+  mBg.style.background = d.thumb
+    ? `linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.45)), url('${d.thumb}') center/cover no-repeat`
+    : bgGradients[d.bg];
+  mTag.textContent = d.displayCat || catLabels[d.cat] || d.cat.toUpperCase();
   mClient.textContent = d.client;
   mTitle.textContent = d.title;
   mYear.textContent = d.year;
   mDur.textContent = 'Duration · ' + d.duration;
   mFmt.textContent = d.format;
   mDesc.textContent = d.desc;
+  mPlay.style.opacity = currentVideoUrl ? '1' : '0.45';
+  mPlay.style.pointerEvents = currentVideoUrl ? 'auto' : 'none';
   mCurrent.textContent = String(i + 1).padStart(2, '0');
   mCredits.innerHTML = Object.entries(d.credits)
     .map(([k, v]) => `<div class="credit-row"><div class="label">${k}</div><div class="value">${v}</div></div>`)
@@ -2225,6 +2234,10 @@ function closeModal() {
 
 cards.forEach((card, i) => {
   card.addEventListener('click', () => openModal(i));
+});
+mPlay.addEventListener('click', () => {
+  if (!currentVideoUrl) return;
+  window.open(currentVideoUrl, '_blank', 'noopener,noreferrer');
 });
 mClose.addEventListener('click', closeModal);
 backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
