@@ -1093,13 +1093,7 @@ img, svg { display: block; max-width: 100%; }
 
 <main class="works-section">
   <div class="container">
-    <div class="filter-tabs" id="filterTabs">
-      <button class="filter-tab active" data-filter="all">ALL</button>
-      <button class="filter-tab" data-filter="commercial">Commercial</button>
-      <button class="filter-tab" data-filter="brand">Brand</button>
-      <button class="filter-tab" data-filter="promotion">Promotion</button>
-      <button class="filter-tab" data-filter="youtube">YouTube</button>
-    </div>
+    <div class="filter-tabs" id="filterTabs"></div>
 
     <div class="works-grid" id="worksGrid"></div>
     <div class="empty-state" id="emptyState">선택한 카테고리에 표시할 포트폴리오가 없습니다.</div>
@@ -1180,6 +1174,7 @@ img, svg { display: block; max-width: 100%; }
 </div>
 
 <script src="portfolio-data.js"></script>
+<script src="portfolio-store.js"></script>
 <script>
 const nav = document.getElementById('nav');
 const onScroll = () => {
@@ -1189,10 +1184,12 @@ const onScroll = () => {
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-const modalData = Array.isArray(window.portfolioData) ? window.portfolioData : [];
 const worksGrid = document.getElementById('worksGrid');
 const emptyState = document.getElementById('emptyState');
-const filterTabs = Array.from(document.querySelectorAll('.filter-tab'));
+const filterTabsContainer = document.getElementById('filterTabs');
+let filterTabs = [];
+let modalData = [];
+let cards = [];
 const workCount = document.getElementById('workCount');
 const catLabels = {
   commercial: 'COMMERCIAL',
@@ -1234,11 +1231,26 @@ function renderWorks() {
   }).join('');
 
   workCount.textContent = String(modalData.length).padStart(2, '0');
+  cards = Array.from(document.querySelectorAll('.work-card'));
 }
 
-renderWorks();
+function renderFilterTabs(items) {
+  const tabs = window.CreaitPortfolioStore.getCategoryTabs(items);
+  filterTabsContainer.innerHTML = tabs.map((cat, index) => `
+    <button class="filter-tab${index === 0 ? ' active' : ''}" data-filter="${cat}">
+      ${window.CreaitPortfolioStore.getCategoryLabel(cat)}
+    </button>
+  `).join('');
 
-const cards = Array.from(document.querySelectorAll('.work-card'));
+  filterTabs = Array.from(filterTabsContainer.querySelectorAll('.filter-tab'));
+  filterTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      applyWorksFilter();
+    });
+  });
+}
 
 function applyWorksFilter() {
   const activeTab = document.querySelector('.filter-tab.active');
@@ -1254,15 +1266,6 @@ function applyWorksFilter() {
   emptyState.classList.toggle('show', visibleCount === 0);
 }
 
-filterTabs.forEach((tab) => {
-  tab.addEventListener('click', () => {
-    filterTabs.forEach((t) => t.classList.remove('active'));
-    tab.classList.add('active');
-    applyWorksFilter();
-  });
-});
-
-applyWorksFilter();
 
 const backdrop = document.getElementById('modalBackdrop');
 const mClose = document.getElementById('modalClose');
@@ -1795,10 +1798,12 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-cards.forEach((card, i) => {
-  const modalIndex = Number(card.dataset.modalIndex ?? i);
-  card.addEventListener('click', () => openModal(modalIndex));
-});
+function bindPortfolioCards() {
+  cards.forEach((card, i) => {
+    const modalIndex = Number(card.dataset.modalIndex ?? i);
+    card.addEventListener('click', () => openModal(modalIndex));
+  });
+}
 
 mPlay.addEventListener('click', playCurrentVideo);
 mVideo.addEventListener('click', handleVideoSurfaceClick);
@@ -1878,6 +1883,17 @@ document.addEventListener('keydown', (e) => {
     togglePlayerPlayback();
   }
 });
+
+async function initArchive() {
+  modalData = await window.CreaitPortfolioStore.loadPortfolioData();
+  renderFilterTabs(modalData);
+  renderWorks();
+  applyWorksFilter();
+  bindPortfolioCards();
+  mTotal.textContent = String(modalData.length).padStart(2, '0');
+}
+
+initArchive();
 </script>
 </body>
 </html>

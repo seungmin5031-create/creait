@@ -1,0 +1,7 @@
+{
+  "name": "creait",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "latest"
+  }
+}
