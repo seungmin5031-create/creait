@@ -24,6 +24,15 @@ button { cursor: pointer; }
   width: min(1400px, calc(100% - 32px));
   margin: 0 auto;
 }
+.auth-check {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: #a0a0a0;
+}
+.auth-check.error { color: #ff9b9b; }
 .admin-shell {
   padding: 36px 0 72px;
 }
@@ -247,7 +256,9 @@ button { cursor: pointer; }
 </style>
 </head>
 <body>
-  <div class="admin-shell">
+  <div class="auth-check" id="authCheck">관리자 세션을 확인하는 중입니다.</div>
+
+  <div class="admin-shell hidden" id="adminShell">
     <div class="container">
       <div class="admin-top">
         <div class="admin-title">
@@ -265,15 +276,10 @@ button { cursor: pointer; }
       <div class="admin-layout">
         <aside class="panel">
           <div class="login-panel">
-            <h2>관리자 인증</h2>
-            <p>Vercel `ADMIN_SECRET` 값과 동일한 비밀번호를 입력해야 저장과 썸네일 업로드가 가능합니다.</p>
-            <div class="field">
-              <label for="adminSecretInput">Admin Secret</label>
-              <input id="adminSecretInput" type="password" placeholder="관리자 비밀번호" />
-            </div>
+            <h2>관리자 세션</h2>
+            <p>`/admin`에서 비밀번호 인증을 마친 세션입니다. 저장과 썸네일 업로드는 서버 세션으로 처리됩니다.</p>
             <div class="top-actions">
-              <button class="btn primary" id="saveSecretBtn" type="button">인증 저장</button>
-              <button class="btn" id="clearSecretBtn" type="button">초기화</button>
+              <button class="btn" id="logoutBtn" type="button">로그아웃</button>
             </div>
           </div>
 
@@ -304,12 +310,11 @@ button { cursor: pointer; }
 <script src="portfolio-data.js"></script>
 <script src="portfolio-store.js"></script>
 <script>
-const ADMIN_STORAGE_KEY = 'creait-admin-secret';
+const authCheck = document.getElementById('authCheck');
+const adminShell = document.getElementById('adminShell');
 const editorList = document.getElementById('portfolioEditorList');
-const adminSecretInput = document.getElementById('adminSecretInput');
 const adminStatus = document.getElementById('adminStatus');
-const saveSecretBtn = document.getElementById('saveSecretBtn');
-const clearSecretBtn = document.getElementById('clearSecretBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 const addPortfolioBtn = document.getElementById('addPortfolioBtn');
 const savePortfolioBtn = document.getElementById('savePortfolioBtn');
 const statTotal = document.getElementById('statTotal');
@@ -318,15 +323,63 @@ const statBrand = document.getElementById('statBrand');
 const statThumbs = document.getElementById('statThumbs');
 
 const state = {
-  items: [],
-  adminSecret: localStorage.getItem(ADMIN_STORAGE_KEY) || ''
+  items: []
 };
-
-adminSecretInput.value = state.adminSecret;
 
 function setAdminStatus(message = '', tone = '') {
   adminStatus.textContent = message;
   adminStatus.className = `status${tone ? ' ' + tone : ''}`;
+}
+
+function setAuthCheckMessage(message = '', tone = '') {
+  authCheck.textContent = message;
+  authCheck.className = `auth-check${tone ? ' ' + tone : ''}`;
+}
+
+function showAdminShell() {
+  authCheck.classList.add('hidden');
+  adminShell.classList.remove('hidden');
+}
+
+function redirectToLogin() {
+  const next = encodeURIComponent('/admin/panel');
+  window.location.replace(`/admin?next=${next}`);
+}
+
+async function readJson(response) {
+  return response.json().catch(() => ({}));
+}
+
+async function ensureAuthorized() {
+  const response = await fetch('/api/admin/auth', { cache: 'no-store' });
+  const result = await readJson(response);
+
+  if (response.ok) {
+    return true;
+  }
+
+  if (response.status === 401) {
+    redirectToLogin();
+    return false;
+  }
+
+  throw new Error(result.error || '관리자 인증 상태를 확인하지 못했습니다.');
+}
+
+async function assertAuthorizedResponse(response, fallbackMessage) {
+  const result = await readJson(response);
+
+  if (response.ok) {
+    return result;
+  }
+
+  if (response.status === 401) {
+    setAdminStatus('세션이 만료되었습니다. 다시 로그인해주세요.', 'error');
+    setTimeout(redirectToLogin, 500);
+    throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.');
+  }
+
+  throw new Error(result.error || fallbackMessage);
 }
 
 function updateStats() {
@@ -508,11 +561,6 @@ function updateCardPreview(card, item) {
 }
 
 async function uploadThumb(index, file) {
-  if (!state.adminSecret) {
-    setAdminStatus('먼저 관리자 인증을 저장해주세요.', 'error');
-    return;
-  }
-
   const formData = new FormData();
   formData.append('file', file);
 
@@ -520,14 +568,9 @@ async function uploadThumb(index, file) {
 
   const response = await fetch('/api/admin/upload-thumb', {
     method: 'POST',
-    headers: { 'x-admin-key': state.adminSecret },
     body: formData
   });
-
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(result.error || '썸네일 업로드에 실패했습니다.');
-  }
+  const result = await assertAuthorizedResponse(response, '썸네일 업로드에 실패했습니다.');
 
   state.items[index].thumb = result.url;
   renderEditor();
@@ -593,19 +636,6 @@ editorList.addEventListener('click', (event) => {
   }
 });
 
-saveSecretBtn.addEventListener('click', () => {
-  state.adminSecret = adminSecretInput.value.trim();
-  localStorage.setItem(ADMIN_STORAGE_KEY, state.adminSecret);
-  setAdminStatus(state.adminSecret ? '관리자 인증값을 저장했습니다.' : '관리자 인증값을 비웠습니다.', state.adminSecret ? 'success' : '');
-});
-
-clearSecretBtn.addEventListener('click', () => {
-  state.adminSecret = '';
-  adminSecretInput.value = '';
-  localStorage.removeItem(ADMIN_STORAGE_KEY);
-  setAdminStatus('관리자 인증값을 제거했습니다.');
-});
-
 addPortfolioBtn.addEventListener('click', () => {
   state.items.unshift(window.CreaitPortfolioStore.createBlankItem(state.items.length));
   renderEditor();
@@ -613,11 +643,6 @@ addPortfolioBtn.addEventListener('click', () => {
 });
 
 savePortfolioBtn.addEventListener('click', async () => {
-  if (!state.adminSecret) {
-    setAdminStatus('먼저 관리자 인증을 저장해주세요.', 'error');
-    return;
-  }
-
   savePortfolioBtn.disabled = true;
   setAdminStatus('포트폴리오 구성을 저장하는 중입니다.');
 
@@ -628,17 +653,11 @@ savePortfolioBtn.addEventListener('click', async () => {
 
     const response = await fetch('/api/portfolio', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': state.adminSecret
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(result.error || '포트폴리오 저장에 실패했습니다.');
-    }
+    await assertAuthorizedResponse(response, '포트폴리오 저장에 실패했습니다.');
 
     setAdminStatus('저장이 완료되었습니다. 메인과 전체 포트폴리오에 바로 반영됩니다.', 'success');
   } catch (error) {
@@ -648,7 +667,33 @@ savePortfolioBtn.addEventListener('click', async () => {
   }
 });
 
-loadItems();
+logoutBtn.addEventListener('click', async () => {
+  logoutBtn.disabled = true;
+  setAdminStatus('관리자 세션을 종료하는 중입니다.');
+
+  try {
+    await fetch('/api/admin/auth', { method: 'DELETE' });
+  } finally {
+    redirectToLogin();
+  }
+});
+
+async function bootstrap() {
+  setAuthCheckMessage('관리자 세션을 확인하는 중입니다.');
+
+  try {
+    const authorized = await ensureAuthorized();
+    if (!authorized) return;
+
+    showAdminShell();
+    await loadItems();
+    setAdminStatus('관리자 세션이 확인되었습니다.', 'success');
+  } catch (error) {
+    setAuthCheckMessage(error.message || '관리자 화면을 불러오지 못했습니다.', 'error');
+  }
+}
+
+bootstrap();
 </script>
 </body>
 </html>

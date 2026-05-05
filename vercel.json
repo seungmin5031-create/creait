@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/", "destination": "/CREAIT.html" },
     { "source": "/works", "destination": "/works.html" },
-    { "source": "/admin", "destination": "/admin.html" }
+    { "source": "/admin", "destination": "/admin-login.html" },
+    { "source": "/admin/panel", "destination": "/admin.html" }
   ]
 }

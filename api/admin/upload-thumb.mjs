@@ -1,4 +1,5 @@
 import { put } from '@vercel/blob';
+import { hasAdminSecret, isAuthorizedRequest } from '../../lib/admin-auth.mjs';
 
 function json(body, init = {}) {
   return new Response(JSON.stringify(body), {
@@ -10,11 +11,6 @@ function json(body, init = {}) {
   });
 }
 
-function isAuthorized(request) {
-  const adminSecret = process.env.ADMIN_SECRET;
-  return Boolean(adminSecret) && request.headers.get('x-admin-key') === adminSecret;
-}
-
 function sanitizeFilename(filename = 'thumb') {
   const ext = filename.includes('.') ? `.${filename.split('.').pop().toLowerCase()}` : '.jpg';
   const name = filename.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-+|-+$/g, '') || 'thumb';
@@ -22,7 +18,7 @@ function sanitizeFilename(filename = 'thumb') {
 }
 
 export async function POST(request) {
-  if (!process.env.ADMIN_SECRET) {
+  if (!hasAdminSecret()) {
     return json({ error: 'ADMIN_SECRET 환경 변수가 설정되지 않았습니다.' }, { status: 500 });
   }
 
@@ -30,7 +26,7 @@ export async function POST(request) {
     return json({ error: 'BLOB_READ_WRITE_TOKEN 환경 변수가 설정되지 않았습니다.' }, { status: 500 });
   }
 
-  if (!isAuthorized(request)) {
+  if (!isAuthorizedRequest(request)) {
     return json({ error: '관리자 인증에 실패했습니다.' }, { status: 401 });
   }
 

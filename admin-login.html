@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CREAIT Admin Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(232, 255, 0, 0.10), transparent 28%),
+    linear-gradient(180deg, #090909, #050505);
+  color: #fff;
+  font-family: "Pretendard Variable", Pretendard, Inter, sans-serif;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.auth-card {
+  width: min(100%, 460px);
+  padding: 32px;
+  border-radius: 24px;
+  border: 1px solid #232323;
+  background: rgba(14, 14, 14, 0.92);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+.eyebrow {
+  color: #e8ff00;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+h1 {
+  margin: 14px 0 0;
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  letter-spacing: -0.05em;
+}
+p {
+  margin: 14px 0 0;
+  color: #a0a0a0;
+  line-height: 1.65;
+}
+.field {
+  margin-top: 26px;
+}
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #d6d6d6;
+}
+.field input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #2b2b2b;
+  border-radius: 14px;
+  background: #0b0b0b;
+  color: #fff;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.btn {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid #2b2b2b;
+  background: #141414;
+  color: #f4f4f4;
+  cursor: pointer;
+}
+.btn.primary {
+  background: #e8ff00;
+  border-color: #e8ff00;
+  color: #050505;
+  font-weight: 700;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.status {
+  min-height: 22px;
+  margin-top: 14px;
+  font-size: 0.92rem;
+  color: #a0a0a0;
+}
+.status.error { color: #ff9b9b; }
+.status.success { color: #e8ff00; }
+</style>
+</head>
+<body>
+  <div class="auth-shell">
+    <form class="auth-card" id="loginForm">
+      <div class="eyebrow">Admin Access</div>
+      <h1>CREAIT Admin</h1>
+      <p>관리자 비밀번호를 확인한 뒤 포트폴리오 편집 화면으로 이동합니다.</p>
+
+      <div class="field">
+        <label for="passwordInput">Admin Password</label>
+        <input id="passwordInput" type="password" autocomplete="current-password" placeholder="관리자 비밀번호" required />
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="loginBtn" type="submit">로그인</button>
+        <a class="btn" href="/CREAIT.html">메인으로</a>
+      </div>
+
+      <div class="status" id="loginStatus" aria-live="polite"></div>
+    </form>
+  </div>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+const passwordInput = document.getElementById('passwordInput');
+const loginBtn = document.getElementById('loginBtn');
+const loginStatus = document.getElementById('loginStatus');
+
+function setStatus(message = '', tone = '') {
+  loginStatus.textContent = message;
+  loginStatus.className = `status${tone ? ' ' + tone : ''}`;
+}
+
+function getNextPath() {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next') || '/admin/panel';
+  return next.startsWith('/') ? next : '/admin/panel';
+}
+
+async function redirectIfAuthenticated() {
+  const response = await fetch('/api/admin/auth', { cache: 'no-store' });
+  if (response.ok) {
+    window.location.replace(getNextPath());
+    return true;
+  }
+  return false;
+}
+
+loginForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const password = passwordInput.value.trim();
+  if (!password) {
+    setStatus('비밀번호를 입력해주세요.', 'error');
+    passwordInput.focus();
+    return;
+  }
+
+  loginBtn.disabled = true;
+  setStatus('관리자 인증을 확인하는 중입니다.');
+
+  try {
+    const response = await fetch('/api/admin/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(result.error || '로그인에 실패했습니다.');
+    }
+
+    setStatus('인증되었습니다. 편집 화면으로 이동합니다.', 'success');
+    window.location.replace(getNextPath());
+  } catch (error) {
+    setStatus(error.message || '로그인 중 오류가 발생했습니다.', 'error');
+    passwordInput.focus();
+    passwordInput.select();
+  } finally {
+    loginBtn.disabled = false;
+  }
+});
+
+redirectIfAuthenticated().catch(() => {});
+</script>
+</body>
+</html>
