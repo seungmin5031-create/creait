@@ -4,7 +4,6 @@ export const config = {
 };
 
 const FALLBACK_TO_EMAIL = 'hello@creait.kr';
-const FALLBACK_FROM_EMAIL = 'CREAIT Contact <onboarding@resend.dev>';
 const EMAIL_ENDPOINT = 'https://api.resend.com/emails';
 
 function json(body, init = {}) {
@@ -100,11 +99,18 @@ export function GET() {
 export async function POST(request) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.CONTACT_TO_EMAIL || FALLBACK_TO_EMAIL;
-  const fromEmail = process.env.CONTACT_FROM_EMAIL || FALLBACK_FROM_EMAIL;
+  const fromEmail = process.env.CONTACT_FROM_EMAIL;
 
   if (!resendApiKey) {
     return json(
       { error: '메일 전송 환경 변수가 설정되지 않았습니다. RESEND_API_KEY를 확인해주세요.' },
+      { status: 500 }
+    );
+  }
+
+  if (!fromEmail) {
+    return json(
+      { error: '메일 발신자 환경 변수가 설정되지 않았습니다. CONTACT_FROM_EMAIL을 확인해주세요.' },
       { status: 500 }
     );
   }
