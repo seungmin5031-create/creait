@@ -9,6 +9,7 @@
     youtube: 'YouTube'
   };
   const BG_KEYS = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5', 'bg-6', 'bg-7', 'bg-8'];
+  const DEFAULT_FEATURED_LIMIT = 15;
 
   function slugify(value = '') {
     return String(value)
@@ -44,7 +45,7 @@
 
     const normalized = {
       id: String(item.id || `${slugify(title)}-${index + 1}`),
-      featured: typeof item.featured === 'boolean' ? item.featured : index < 8,
+      featured: typeof item.featured === 'boolean' ? item.featured : index < DEFAULT_FEATURED_LIMIT,
       cat,
       displayCat: String(item.displayCat || '').trim() || '',
       client,
@@ -81,7 +82,7 @@
     return normalizeCollection(window.portfolioData || []);
   }
 
-  function getFeaturedItems(items, limit = 8) {
+  function getFeaturedItems(items, limit = DEFAULT_FEATURED_LIMIT) {
     return normalizeCollection(items).filter((item) => item.featured !== false).slice(0, limit);
   }
 
@@ -123,6 +124,7 @@
     CATEGORY_ORDER,
     CATEGORY_LABELS,
     BG_KEYS,
+    DEFAULT_FEATURED_LIMIT,
     normalizeItem,
     normalizeCollection,
     loadPortfolioData,
