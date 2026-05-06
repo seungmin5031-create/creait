@@ -1,9 +1,9 @@
 {
   "redirects": [
-    { "source": "/CREAIT.html", "destination": "/", "permanent": true }
+    { "source": "/CREAIT.html", "destination": "/", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/CREAIT.html" },
     { "source": "/works", "destination": "/works.html" },
     { "source": "/admin", "destination": "/admin-login.html" },
     { "source": "/admin/panel", "destination": "/admin.html" }
