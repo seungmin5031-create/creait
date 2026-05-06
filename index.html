@@ -214,6 +214,8 @@ section { padding: 120px 0; }
 
 /* ============== SECTION 2: 히어로 ============== */
 .hero {
+  --hero-video-scale: 1.02;
+  --hero-video-intro-scale: 1.08;
   position: relative;
   height: 100vh;
   min-height: 640px;
@@ -237,11 +239,37 @@ section { padding: 120px 0; }
   overflow: hidden;
 }
 .hero-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: brightness(0.72) saturate(0.96) contrast(1.04);
-  transform: scale(1.02);
+  transform: scale(var(--hero-video-intro-scale));
+  opacity: 0;
+  transition: opacity 960ms ease, transform 1400ms cubic-bezier(0.22, 1, 0.36, 1), filter 960ms ease;
+  will-change: transform, opacity;
+}
+.hero-video-poster {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8,8,8,0.16), rgba(8,8,8,0.36)),
+    url('assets/showreel-poster.jpg') center/cover no-repeat;
+  filter: brightness(0.60) saturate(0.94) contrast(1.02);
+  transform: scale(var(--hero-video-intro-scale));
+  transition: opacity 1200ms ease, transform 1600ms cubic-bezier(0.22, 1, 0.36, 1), filter 1200ms ease;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.hero.video-started .hero-video {
+  opacity: 1;
+  transform: scale(var(--hero-video-scale));
+}
+.hero.video-started .hero-video-poster {
+  opacity: 0;
+  transform: scale(var(--hero-video-scale));
+  filter: brightness(0.72) saturate(0.96) contrast(1.04);
 }
 .hero-scrim {
   position: absolute;
@@ -390,7 +418,10 @@ section { padding: 120px 0; }
 }
 
 @media (max-width: 767px) {
-  .hero-video { transform: scale(1.08); }
+  .hero {
+    --hero-video-scale: 1.08;
+    --hero-video-intro-scale: 1.12;
+  }
 }
 
 @keyframes fadeUp {
@@ -2033,9 +2064,10 @@ section { padding: 120px 0; }
 <!-- ============== HERO ============== -->
 <header class="hero" id="top">
   <div class="hero-video-wrap" aria-hidden="true">
-    <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+    <video class="hero-video" id="heroVideo" autoplay muted playsinline preload="auto" poster="assets/showreel-poster.jpg">
       <source src="showreel.mp4" type="video/mp4" />
     </video>
+    <div class="hero-video-poster" aria-hidden="true"></div>
   </div>
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="hero-inner">
@@ -2533,6 +2565,53 @@ const fadeObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
 
 document.querySelectorAll('.fade-up').forEach(el => fadeObs.observe(el));
+
+/* ============== 히어로 쇼릴 시작 연출 ============== */
+const hero = document.querySelector('.hero');
+const heroVideo = document.getElementById('heroVideo');
+const heroVideoIntroOffset = 1;
+
+function revealHeroVideo() {
+  if (!hero || hero.classList.contains('video-started')) return;
+  window.requestAnimationFrame(() => hero.classList.add('video-started'));
+}
+
+function getHeroVideoStartTime() {
+  if (!heroVideo) return 0;
+  const duration = Number(heroVideo.duration) || 0;
+  if (!duration) return 0;
+  return Math.min(heroVideoIntroOffset, Math.max(0, duration - 0.25));
+}
+
+function playHeroVideo() {
+  if (!heroVideo) return;
+  heroVideo.play().catch(() => {});
+}
+
+function restartHeroVideo() {
+  if (!heroVideo) return;
+
+  const startTime = getHeroVideoStartTime();
+  if (startTime <= 0) {
+    playHeroVideo();
+    return;
+  }
+
+  const handleSeeked = () => playHeroVideo();
+  heroVideo.addEventListener('seeked', handleSeeked, { once: true });
+  heroVideo.currentTime = startTime;
+}
+
+if (hero && heroVideo) {
+  heroVideo.addEventListener('loadedmetadata', restartHeroVideo, { once: true });
+  if (heroVideo.readyState >= 1) restartHeroVideo();
+
+  heroVideo.addEventListener('playing', () => {
+    window.setTimeout(revealHeroVideo, 120);
+  });
+
+  heroVideo.addEventListener('ended', restartHeroVideo);
+}
 
 /* ============== 포트폴리오 데이터 / 필터 ============== */
 const worksGrid = document.getElementById('worksGrid');
