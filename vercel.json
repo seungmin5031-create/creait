@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/CREAIT.html", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/", "destination": "/CREAIT.html" },
     { "source": "/works", "destination": "/works.html" },
