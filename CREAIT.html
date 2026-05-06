@@ -345,7 +345,7 @@ section { padding: 120px 0; }
   letter-spacing: 0.18em;
   color: var(--fg-mute);
   opacity: 0;
-  animation: fadeUp 1s ease 1.5s forwards, bounce 2.4s ease-in-out 2s infinite;
+  animation: heroScrollReveal 1s ease 1.5s forwards, bounce 2.4s ease-in-out 2s infinite;
 }
 .hero-scroll .arrow {
   width: 1px; height: 36px;
@@ -365,6 +365,10 @@ section { padding: 120px 0; }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroScrollReveal {
+  from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 @keyframes bounce {
   0%, 100% { transform: translateX(-50%) translateY(0); }
