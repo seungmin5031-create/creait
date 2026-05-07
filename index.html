@@ -1601,101 +1601,6 @@ section { padding: 120px 0; }
   font-weight: 500;
 }
 
-/* ============== 플로팅 문의 버튼 ============== */
-.fab-wrap {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 90;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: flex-end;
-  gap: 14px;
-}
-
-.fab-main {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #000;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 4px 20px var(--accent-glow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  z-index: 2;
-}
-.fab-main::before {
-  content: "";
-  position: absolute; inset: -6px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-  opacity: 0;
-  animation: pulse 3s ease-out infinite;
-}
-.fab-main:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 30px rgba(232,255,0,0.45);
-}
-.fab-main .icon { transition: transform 0.3s ease, opacity 0.3s ease; line-height: 1; }
-.fab-wrap.open .fab-main .icon-chat { opacity: 0; transform: rotate(90deg) scale(0.6); position: absolute; }
-.fab-wrap.open .fab-main .icon-x    { opacity: 1; transform: rotate(0) scale(1); }
-.fab-main .icon-x { opacity: 0; transform: rotate(-90deg) scale(0.6); position: absolute; }
-.fab-main .icon-chat { opacity: 1; }
-
-@keyframes pulse {
-  0% { opacity: 0.6; transform: scale(1); }
-  70% { opacity: 0; transform: scale(1.6); }
-  100% { opacity: 0; transform: scale(1.6); }
-}
-
-.fab-sub {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  opacity: 0;
-  transform: translateY(20px) scale(0.8);
-  pointer-events: none;
-  transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.fab-wrap.open .fab-sub {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-.fab-wrap.open .fab-sub:nth-child(2) { transition-delay: 0.05s; }
-.fab-wrap.open .fab-sub:nth-child(3) { transition-delay: 0.10s; }
-.fab-wrap.open .fab-sub:nth-child(4) { transition-delay: 0.15s; }
-.fab-wrap.open .fab-sub:nth-child(5) { transition-delay: 0.20s; }
-
-.fab-sub .tip {
-  background: rgba(20,20,20,0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid #2a2a2a;
-  color: var(--fg);
-  font-size: 0.82rem;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-  letter-spacing: -0.02em;
-}
-.fab-sub .btn {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: var(--bg-elev);
-  border: 1px solid #2a2a2a;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-}
-.fab-sub .btn:hover {
-  transform: scale(1.08);
-  border-color: var(--accent);
-  background: #1a1a1a;
-}
-
 @media (max-width: 767px) {
   .contact-wrap { gap: 30px; }
   .contact-info h3 { font-size: 1.45rem; }
@@ -1780,29 +1685,6 @@ section { padding: 120px 0; }
     justify-content: center;
     text-align: center;
     font-size: 0.72rem;
-  }
-
-  .fab-wrap {
-    right: 14px;
-    bottom: calc(14px + env(safe-area-inset-bottom));
-    gap: 10px;
-  }
-  .fab-main {
-    width: 50px;
-    height: 50px;
-    font-size: 1.2rem;
-  }
-  .fab-sub {
-    gap: 10px;
-  }
-  .fab-sub .tip {
-    font-size: 0.74rem;
-    padding: 7px 10px;
-  }
-  .fab-sub .btn {
-    width: 42px;
-    height: 42px;
-    font-size: 1rem;
   }
 
   .brand-modal-backdrop {
@@ -3011,26 +2893,6 @@ section { padding: 120px 0; }
   </div>
 </div>
 
-<!-- ============== FLOATING CONTACT FAB ============== -->
-<div class="fab-wrap" id="fabWrap">
-  <a class="fab-sub" href="#contact">
-    <span class="tip">문의 폼</span>
-    <span class="btn">📝</span>
-  </a>
-  <a class="fab-sub" href="tel:01046478835">
-    <span class="tip">전화 문의</span>
-    <span class="btn">📞</span>
-  </a>
-  <a class="fab-sub" href="mailto:hello@creait.kr">
-    <span class="tip">이메일 문의</span>
-    <span class="btn">📧</span>
-  </a>
-  <button class="fab-main" id="fabMain" aria-label="Toggle contact options">
-    <span class="icon icon-chat">💬</span>
-    <span class="icon icon-x">✕</span>
-  </button>
-</div>
-
 <script src="portfolio-data.js"></script>
 <script src="portfolio-store.js"></script>
 <script>
@@ -4007,13 +3869,6 @@ async function initSelectedWorks() {
   mTotal.textContent = String(modalData.length).padStart(2, '0');
 }
 
-/* ============== 플로팅 FAB ============== */
-const fabWrap = document.getElementById('fabWrap');
-const fabMain = document.getElementById('fabMain');
-fabMain.addEventListener('click', () => fabWrap.classList.toggle('open'));
-document.addEventListener('click', (e) => {
-  if (!fabWrap.contains(e.target)) fabWrap.classList.remove('open');
-});
 initSelectedWorks();
 </script>
 </body>
