@@ -2589,10 +2589,28 @@ const contactForm = document.getElementById('contactForm');
 const contactSubmitBtn = contactForm.querySelector('.submit-btn');
 const contactSubmitLabel = contactSubmitBtn.querySelector('span');
 const formStatus = document.getElementById('formStatus');
+const directContactEmail = 'hello@creait.kr';
 
 function setFormStatus(message = '', tone = '') {
   formStatus.textContent = message;
   formStatus.className = `form-status${tone ? ' ' + tone : ''}`;
+}
+
+function toFriendlyContactError(message = '') {
+  const normalized = String(message || '').trim();
+  if (!normalized) {
+    return `문의 전송 중 오류가 발생했습니다. 잠시 후 다시 시도하거나 ${directContactEmail}로 직접 연락해주세요.`;
+  }
+
+  if (
+    normalized.includes('환경 변수') ||
+    normalized.includes('메일 전송 서비스') ||
+    normalized.includes('Failed to fetch')
+  ) {
+    return `문의 전송에 일시적인 문제가 있습니다. 잠시 후 다시 시도하거나 ${directContactEmail}로 직접 연락해주세요.`;
+  }
+
+  return normalized;
 }
 
 contactForm.addEventListener('submit', async (e) => {
@@ -2634,7 +2652,7 @@ contactForm.addEventListener('submit', async (e) => {
     document.querySelectorAll('#chips .chip.active').forEach(c => c.classList.remove('active'));
     setFormStatus('문의가 접수되었습니다. 빠르게 연락드리겠습니다.', 'success');
   } catch (error) {
-    setFormStatus(error.message || '문의 전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    setFormStatus(toFriendlyContactError(error.message), 'error');
   } finally {
     contactSubmitBtn.disabled = false;
     contactSubmitLabel.textContent = '문의 보내기';

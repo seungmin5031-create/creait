@@ -4,6 +4,8 @@ export const config = {
 };
 
 const FALLBACK_TO_EMAIL = 'hello@creait.kr';
+const FALLBACK_FROM_EMAIL = 'CREAIT Contact <hello@creait.kr>';
+const RESEND_ONBOARDING_FROM_EMAIL = 'CREAIT Contact <onboarding@resend.dev>';
 const EMAIL_ENDPOINT = 'https://api.resend.com/emails';
 
 function json(body, init = {}) {
@@ -96,21 +98,36 @@ export function GET() {
   return json({ ok: true, message: 'Use POST to submit contact inquiries.' });
 }
 
+async function sendWithResend({ resendApiKey, fromEmail, toEmail, subject, payload }) {
+  const resendResponse = await fetch(EMAIL_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'creait-contact-form/1.0'
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      subject,
+      html: toHtml(payload),
+      text: toPlainText(payload),
+      reply_to: payload.email
+    })
+  });
+
+  const resendResult = await resendResponse.json().catch(() => ({}));
+  return { resendResponse, resendResult };
+}
+
 export async function POST(request) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const toEmail = process.env.CONTACT_TO_EMAIL || FALLBACK_TO_EMAIL;
-  const fromEmail = process.env.CONTACT_FROM_EMAIL;
+  const configuredFromEmail = String(process.env.CONTACT_FROM_EMAIL || '').trim();
 
   if (!resendApiKey) {
     return json(
       { error: '메일 전송 환경 변수가 설정되지 않았습니다. RESEND_API_KEY를 확인해주세요.' },
-      { status: 500 }
-    );
-  }
-
-  if (!fromEmail) {
-    return json(
-      { error: '메일 발신자 환경 변수가 설정되지 않았습니다. CONTACT_FROM_EMAIL을 확인해주세요.' },
       { status: 500 }
     );
   }
@@ -140,30 +157,84 @@ export async function POST(request) {
   const subjectParts = ['CREAIT 문의'];
   if (payload.name) subjectParts.push(payload.name);
   if (payload.types.length) subjectParts.push(payload.types.join('/'));
+  const subject = subjectParts.join(' | ');
 
-  const resendResponse = await fetch(EMAIL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      'Content-Type': 'application/json',
-      'User-Agent': 'creait-contact-form/1.0'
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [toEmail],
-      subject: subjectParts.join(' | '),
-      html: toHtml(payload),
-      text: toPlainText(payload),
-      reply_to: payload.email
-    })
-  });
+  const usesFallbackSender = !configuredFromEmail;
+  const primaryFromEmail = configuredFromEmail || FALLBACK_FROM_EMAIL;
 
-  const resendResult = await resendResponse.json().catch(() => ({}));
+  if (usesFallbackSender) {
+    console.warn('[contact] CONTACT_FROM_EMAIL is not set. Using fallback sender.', {
+      primaryFromEmail
+    });
+  }
+
+  let resendResponse;
+  let resendResult;
+
+  try {
+    ({ resendResponse, resendResult } = await sendWithResend({
+      resendApiKey,
+      fromEmail: primaryFromEmail,
+      toEmail,
+      subject,
+      payload
+    }));
+  } catch (error) {
+    console.error('[contact] Failed to reach Resend.', {
+      message: error instanceof Error ? error.message : String(error)
+    });
+    return json(
+      { error: '메일 전송 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.' },
+      { status: 502 }
+    );
+  }
+
+  if (!resendResponse.ok && usesFallbackSender) {
+    const primaryErrorMessage =
+      resendResult?.message ||
+      resendResult?.error ||
+      '메일 전송 서비스에서 오류가 발생했습니다.';
+    const senderRejected = /from|sender|domain|verify|verified|onboarding/i.test(
+      primaryErrorMessage
+    );
+
+    if (senderRejected) {
+      console.warn('[contact] Fallback sender rejected. Retrying with Resend onboarding sender.', {
+        primaryFromEmail,
+        primaryErrorMessage
+      });
+
+      try {
+        ({ resendResponse, resendResult } = await sendWithResend({
+          resendApiKey,
+          fromEmail: RESEND_ONBOARDING_FROM_EMAIL,
+          toEmail,
+          subject,
+          payload
+        }));
+      } catch (error) {
+        console.error('[contact] Retry with Resend onboarding sender failed.', {
+          message: error instanceof Error ? error.message : String(error)
+        });
+        return json(
+          { error: '메일 전송 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.' },
+          { status: 502 }
+        );
+      }
+    }
+  }
+
   if (!resendResponse.ok) {
     const errorMessage =
       resendResult?.message ||
       resendResult?.error ||
       '메일 전송 서비스에서 오류가 발생했습니다.';
+
+    console.error('[contact] Resend rejected the contact email.', {
+      status: resendResponse.status,
+      fromEmailTried: usesFallbackSender ? `${primaryFromEmail} -> ${RESEND_ONBOARDING_FROM_EMAIL}` : primaryFromEmail,
+      errorMessage
+    });
 
     return json({ error: errorMessage }, { status: 502 });
   }
