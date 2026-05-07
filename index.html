@@ -359,7 +359,6 @@ section { padding: 120px 0; }
 }
 
 .hero-cta {
-  margin-top: 44px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -374,9 +373,6 @@ section { padding: 120px 0; }
   letter-spacing: -0.01em;
   white-space: nowrap;
   transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeUp 1s ease 1.1s forwards;
 }
 .hero-cta:hover {
   background: var(--accent);
@@ -384,6 +380,28 @@ section { padding: 120px 0; }
   box-shadow: 0 8px 32px var(--accent-glow);
 }
 .hero-cta .play { font-size: 0.7em; }
+.hero-actions {
+  margin-top: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 1s ease 1.1s forwards;
+}
+.hero-cta.hero-cta-secondary {
+  border-color: rgba(255,255,255,0.14);
+  background: rgba(10,10,10,0.36);
+  color: var(--fg);
+}
+.hero-cta.hero-cta-secondary:hover {
+  border-color: rgba(255,255,255,0.26);
+  background: rgba(255,255,255,0.08);
+  color: var(--fg);
+  box-shadow: none;
+}
 
 .hero-scroll {
   position: absolute;
@@ -867,8 +885,21 @@ section { padding: 120px 0; }
   .mobile-menu a { font-size: 1.7rem; }
 
   .hero {
+    --hero-video-scale: 1;
+    --hero-video-intro-scale: 1.02;
     min-height: 560px;
     padding: 0 var(--pad);
+  }
+  .hero-video {
+    object-fit: contain;
+    object-position: center center;
+    background: #050505;
+  }
+  .hero-video-poster {
+    background:
+      linear-gradient(180deg, rgba(8,8,8,0.18), rgba(8,8,8,0.34)),
+      url('assets/showreel-poster.jpg') center / contain no-repeat,
+      #050505;
   }
   .hero-inner { max-width: 320px; }
   .hero-eyebrow {
@@ -891,9 +922,17 @@ section { padding: 120px 0; }
     line-height: 1.65;
   }
   .hero-cta {
-    margin-top: 28px;
     padding: 12px 24px;
     font-size: 0.88rem;
+  }
+  .hero-actions {
+    margin-top: 24px;
+    gap: 10px;
+    width: 100%;
+  }
+  .hero-actions .hero-cta {
+    width: 100%;
+    justify-content: center;
   }
   .hero-scroll {
     bottom: 20px;
@@ -962,6 +1001,11 @@ section { padding: 120px 0; }
     font-size: 0.9rem;
   }
 
+  #process,
+  .stats-section {
+    display: none;
+  }
+
   .process { gap: 0; }
   .step {
     padding: 18px 0 18px 28px;
@@ -994,98 +1038,6 @@ section { padding: 120px 0; }
     letter-spacing: 0.15em;
     margin-bottom: 32px;
   }
-
-  .about { gap: 28px; }
-  .about-visual {
-    border-radius: 14px;
-    aspect-ratio: 4 / 3.3;
-  }
-  .about-visual .label { font-size: 1.8rem; }
-  .about-visual .sub {
-    bottom: 20px;
-    left: 20px;
-    font-size: 0.64rem;
-  }
-  .about-eyebrow { font-size: 0.76rem; }
-  .about-title {
-    margin-top: 12px;
-    font-size: 1.4rem;
-  }
-  .about-body {
-    margin-top: 16px;
-    font-size: 0.9rem;
-    line-height: 1.72;
-  }
-  .about-link {
-    margin-top: 20px;
-    font-size: 0.88rem;
-  }
-
-  .cta { padding: 88px 0; }
-  .cta h2 { font-size: 1.6rem; }
-  .cta p {
-    margin-top: 10px;
-    font-size: 0.9rem;
-  }
-  .cta-btn {
-    margin-top: 26px;
-    padding: 14px 30px;
-    font-size: 0.92rem;
-  }
-
-  .contact-wrap { gap: 30px; }
-  .contact-info h3 { font-size: 1.45rem; }
-  .contact-info .lead {
-    margin-top: 10px;
-    font-size: 0.88rem;
-  }
-  .info-list { margin-top: 24px; gap: 14px; }
-  .info-list li {
-    gap: 12px;
-    font-size: 0.88rem;
-  }
-  .info-list .ico {
-    width: 32px;
-    height: 32px;
-    font-size: 0.92rem;
-  }
-  .socials {
-    gap: 14px;
-    margin-top: 26px;
-    padding-top: 20px;
-    font-size: 0.84rem;
-  }
-  .form {
-    border-radius: 14px;
-    padding: 24px 18px;
-  }
-  .field { margin-bottom: 16px; }
-  .field-row { grid-template-columns: 1fr; gap: 12px; }
-  .field label {
-    margin-bottom: 6px;
-    font-size: 0.8rem;
-  }
-  .input, .textarea, .select {
-    padding: 12px 14px;
-    font-size: 0.9rem;
-  }
-  .textarea { min-height: 108px; }
-  .chip {
-    padding: 7px 12px;
-    font-size: 0.78rem;
-  }
-  .submit-btn {
-    padding: 14px;
-    font-size: 0.92rem;
-  }
-  .form-status {
-    margin-top: 10px;
-    min-height: 20px;
-    font-size: 0.84rem;
-  }
-
-  .footer { padding: 60px 0 24px; }
-  .footer-grid { gap: 24px; }
 }
 
 /* ============== SECTION 8: ABOUT ============== */
@@ -1187,6 +1139,156 @@ section { padding: 120px 0; }
 }
 .about-link .arrow { transition: transform 0.3s ease; }
 .about-link:hover .arrow { transform: translateX(6px); }
+
+.brand-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  background: rgba(5, 5, 5, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.brand-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.brand-modal {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: min(88vh, 860px);
+  overflow: auto;
+  border-radius: 26px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(232,255,0,0.10), transparent 34%),
+    radial-gradient(circle at 100% 10%, rgba(80,80,180,0.18), transparent 38%),
+    linear-gradient(180deg, rgba(20,20,20,0.98), rgba(8,8,8,0.98));
+  box-shadow: 0 36px 80px rgba(0,0,0,0.46);
+  padding: 34px 34px 30px;
+}
+.brand-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(20,20,20,0.72);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--fg);
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+.brand-modal-close:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  transform: rotate(90deg);
+}
+.brand-modal-kicker {
+  font-family: var(--font-en);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.brand-modal-title {
+  margin-top: 14px;
+  max-width: 560px;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.05em;
+  color: var(--fg);
+}
+.brand-modal-summary {
+  margin-top: 18px;
+  max-width: 620px;
+  font-size: 1rem;
+  color: var(--fg-mute-2);
+  line-height: 1.82;
+  letter-spacing: -0.018em;
+}
+.brand-modal-grid {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.brand-modal-card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+}
+.brand-modal-card .num {
+  font-family: var(--font-en);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+.brand-modal-card h4 {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--fg);
+}
+.brand-modal-card p {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: var(--fg-mute-2);
+  line-height: 1.65;
+  letter-spacing: -0.015em;
+}
+.brand-modal-actions {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.brand-modal-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--fg);
+  font-family: var(--font-en);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.brand-modal-link.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+.brand-modal-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.2);
+}
+.brand-modal-link.primary:hover {
+  border-color: #fff;
+  background: #fff;
+}
 
 /* ============== SECTION 9: CTA ============== */
 .cta {
@@ -1571,6 +1673,153 @@ section { padding: 120px 0; }
   transform: scale(1.08);
   border-color: var(--accent);
   background: #1a1a1a;
+}
+
+@media (max-width: 767px) {
+  .contact-wrap { gap: 30px; }
+  .contact-info h3 { font-size: 1.45rem; }
+  .contact-info .lead {
+    margin-top: 10px;
+    font-size: 0.88rem;
+  }
+  .info-list { margin-top: 24px; gap: 14px; }
+  .info-list li {
+    gap: 12px;
+    font-size: 0.88rem;
+  }
+  .info-list .ico {
+    width: 32px;
+    height: 32px;
+    font-size: 0.92rem;
+  }
+  .form {
+    border-radius: 14px;
+    padding: 24px 18px;
+  }
+  .field { margin-bottom: 16px; }
+  .field-row { grid-template-columns: 1fr; gap: 12px; }
+  .field label {
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+  }
+  .input, .textarea, .select {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  .textarea { min-height: 108px; }
+  .chip {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+  }
+  .submit-btn {
+    padding: 14px;
+    font-size: 0.92rem;
+  }
+  .form-status {
+    margin-top: 10px;
+    min-height: 20px;
+    font-size: 0.84rem;
+  }
+
+  .footer { padding: 42px 0 22px; }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 18px;
+  }
+  .footer-col {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+  }
+  .footer-col h4 {
+    margin-bottom: 0;
+    font-size: 0.72rem;
+  }
+  .footer-col ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .footer-col li a {
+    font-size: 0.82rem;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+  }
+  .footer-desc {
+    margin-top: 0;
+    font-size: 0.84rem;
+  }
+  .footer-bottom {
+    margin-top: 24px;
+    padding-top: 18px;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.72rem;
+  }
+
+  .fab-wrap {
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+  .fab-main {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  .fab-sub {
+    gap: 10px;
+  }
+  .fab-sub .tip {
+    font-size: 0.74rem;
+    padding: 7px 10px;
+  }
+  .fab-sub .btn {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+
+  .brand-modal-backdrop {
+    padding: 14px;
+    align-items: flex-end;
+  }
+  .brand-modal {
+    width: 100%;
+    max-height: 86vh;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 18px 18px;
+  }
+  .brand-modal-title {
+    margin-top: 12px;
+    font-size: 1.8rem;
+  }
+  .brand-modal-summary {
+    margin-top: 14px;
+    font-size: 0.9rem;
+    line-height: 1.72;
+  }
+  .brand-modal-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .brand-modal-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  .brand-modal-actions {
+    margin-top: 22px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .brand-modal-link {
+    width: 100%;
+    font-size: 0.84rem;
+  }
 }
 
 /* ============== PORTFOLIO MODAL ============== */
@@ -2287,7 +2536,7 @@ section { padding: 120px 0; }
   </a>
   <div class="nav-menu">
     <a href="#works">Works</a>
-    <a href="#about">About</a>
+    <a href="#brand-story" data-open-brand-modal>About</a>
     <a href="#contact">Contact</a>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -2297,7 +2546,7 @@ section { padding: 120px 0; }
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="#works" data-mclose>Works</a>
-  <a href="#about" data-mclose>About</a>
+  <a href="#brand-story" data-open-brand-modal data-mclose>About</a>
   <a href="#contact" data-mclose>Contact</a>
 </div>
 
@@ -2315,19 +2564,46 @@ section { padding: 120px 0; }
     <h1 class="hero-title">CRE<span class="ai-mark">AI</span>T</h1>
     <div class="hero-slogan">WE CREATE IT.</div>
     <div class="hero-tag">영상으로 브랜드의 이야기를 완성합니다.</div>
-    <a href="#works" class="hero-cta">
-      <span>포트폴리오 보기</span>
-      <span class="play">▶</span>
-    </a>
+    <div class="hero-actions">
+      <a href="#works" class="hero-cta">
+        <span>포트폴리오 보기</span>
+        <span class="play">▶</span>
+      </a>
+      <a href="#brand-story" class="hero-cta hero-cta-secondary" data-open-brand-modal>
+        <span>크리에잇 소개</span>
+        <span class="play">↗</span>
+      </a>
+    </div>
   </div>
-  <a href="#what" class="hero-scroll" aria-label="Scroll down">
+  <a href="#works" class="hero-scroll" aria-label="Scroll down">
     <span>SCROLL</span>
     <span class="arrow"></span>
   </a>
 </header>
 
+<!-- ============== SELECTED WORKS ============== -->
+<section id="works" data-screen-label="02 Selected Works">
+  <div class="container">
+    <div class="section-head fade-up">
+      <h2 class="section-title">SELECTED WORKS</h2>
+      <p class="section-sub">최근 진행한 대표 프로젝트를 소개합니다.</p>
+    </div>
+
+    <div class="filter-tabs fade-up" id="filterTabs"></div>
+
+    <div class="works-grid" id="worksGrid"></div>
+
+    <div class="view-all-wrap fade-up" style="margin-top: 56px;">
+      <a href="works.html" class="view-all">
+        <span>View All Works</span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ============== WHAT WE CREATE ============== -->
-<section id="what" data-screen-label="02 What We Create">
+<section id="what" data-screen-label="03 What We Create">
   <div class="container">
     <div class="section-head fade-up">
       <h2 class="section-title">WHAT WE CREATE</h2>
@@ -2370,27 +2646,6 @@ section { padding: 120px 0; }
         <div class="kr">모션그래픽</div>
         <div class="desc">데이터와 정보를 시각화</div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============== SELECTED WORKS ============== -->
-<section id="works" data-screen-label="03 Selected Works">
-  <div class="container">
-    <div class="section-head fade-up">
-      <h2 class="section-title">SELECTED WORKS</h2>
-      <p class="section-sub">최근 진행한 대표 프로젝트를 소개합니다.</p>
-    </div>
-
-    <div class="filter-tabs fade-up" id="filterTabs"></div>
-
-    <div class="works-grid" id="worksGrid"></div>
-
-    <div class="view-all-wrap fade-up" style="margin-top: 56px;">
-      <a href="works.html" class="view-all">
-        <span>View All Works</span>
-        <span class="arrow">→</span>
-      </a>
     </div>
   </div>
 </section>
@@ -2510,38 +2765,8 @@ section { padding: 120px 0; }
   </div>
 </section>
 
-<!-- ============== ABOUT ============== -->
-<section id="about" data-screen-label="07 About">
-  <div class="container">
-    <div class="about">
-      <div class="about-visual fade-up">
-        <div class="label">CRE<span class="ai">AI</span>T STUDIO</div>
-        <div class="sub">SEOUL · KR</div>
-      </div>
-      <div class="about-text fade-up" style="transition-delay:0.1s">
-        <div class="about-eyebrow">ABOUT CREAIT</div>
-        <h2 class="about-title">We tell your brand's story through moving images.</h2>
-        <p class="about-body">CREAIT는 'Create it' — 우리가 만든다는 의지를 담은 영상 프로덕션입니다. 브랜드가 말하고 싶은 이야기를 듣고, 기획부터 촬영, 편집, 후반 작업까지 원스톱으로 완성합니다. 광고, 브랜드 필름, 뮤직비디오, 웹드라마까지 — 영상이 필요한 모든 순간에 함께합니다.</p>
-        <a href="#contact" class="about-link">
-          <span>더 알아보기</span>
-          <span class="arrow">→</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============== CTA ============== -->
-<section class="cta" data-screen-label="08 CTA">
-  <div class="container fade-up">
-    <h2>프로젝트를 함께 만들어볼까요?</h2>
-    <p>Let's create something together.</p>
-    <a href="#contact" class="cta-btn" id="ctaBtn">프로젝트 문의하기</a>
-  </div>
-</section>
-
 <!-- ============== CONTACT ============== -->
-<section id="contact" data-screen-label="09 Contact">
+<section id="contact" data-screen-label="07 Contact">
   <div class="container">
     <div class="section-head fade-up">
       <h2 class="section-title">GET IN TOUCH</h2>
@@ -2568,12 +2793,6 @@ section { padding: 120px 0; }
             <span class="v"><small>Studio</small>전남 순천시 서문로 35-13, 1층 (저전동)</span>
           </li>
         </ul>
-
-        <div class="socials">
-          <a href="#">Instagram</a>
-          <a href="#">YouTube</a>
-          <a href="#">Vimeo</a>
-        </div>
       </aside>
 
       <form class="form fade-up" id="contactForm" style="transition-delay:0.1s" novalidate>
@@ -2652,17 +2871,17 @@ section { padding: 120px 0; }
         <h4>Menu</h4>
         <ul>
           <li><a href="#works">Works</a></li>
-          <li><a href="#about">About</a></li>
+          <li><a href="#brand-story" data-open-brand-modal>About</a></li>
+          <li><a href="works.html">All Works</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Follow</h4>
+        <h4>Contact</h4>
         <ul>
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">YouTube</a></li>
-          <li><a href="#">Vimeo</a></li>
-          <li><a href="#">KakaoTalk</a></li>
+          <li><a href="mailto:hello@creait.kr">Email</a></li>
+          <li><a href="tel:01046478835">Call</a></li>
+          <li><a href="#contact">Inquiry Form</a></li>
         </ul>
       </div>
     </div>
@@ -2672,6 +2891,37 @@ section { padding: 120px 0; }
     </div>
   </div>
 </footer>
+
+<!-- ============== BRAND STORY MODAL ============== -->
+<div class="brand-modal-backdrop" id="brandModalBackdrop" aria-hidden="true">
+  <div class="brand-modal" role="dialog" aria-modal="true" aria-labelledby="brandModalTitle">
+    <button class="brand-modal-close" id="brandModalClose" aria-label="Close">✕</button>
+    <div class="brand-modal-kicker">ABOUT CREAIT</div>
+    <h2 class="brand-modal-title" id="brandModalTitle">브랜드의 이야기를 영상 언어로 설계하고 완성합니다.</h2>
+    <p class="brand-modal-summary">CREAIT는 ‘Create it’이라는 이름처럼, 아이디어를 실제 결과물까지 밀어붙이는 영상 프로덕션입니다. 브랜드가 왜 말해야 하는지부터 어떤 장면으로 설득할지까지 함께 정리하고, 기획, 촬영, 편집, 후반 작업을 한 흐름으로 연결합니다.</p>
+    <div class="brand-modal-grid">
+      <article class="brand-modal-card">
+        <div class="num">01</div>
+        <h4>Strategy</h4>
+        <p>브랜드 메시지를 영상 문법으로 번역해 기획 방향을 먼저 잡습니다.</p>
+      </article>
+      <article class="brand-modal-card">
+        <div class="num">02</div>
+        <h4>Production</h4>
+        <p>광고, 브랜드 필름, 뮤직비디오, 웹드라마까지 목적에 맞는 톤으로 제작합니다.</p>
+      </article>
+      <article class="brand-modal-card">
+        <div class="num">03</div>
+        <h4>Post</h4>
+        <p>편집과 후반 작업까지 한 팀에서 이어가며 결과물의 밀도를 끝까지 관리합니다.</p>
+      </article>
+    </div>
+    <div class="brand-modal-actions">
+      <a href="#works" class="brand-modal-link primary" data-close-brand-modal>대표 포트폴리오 보기</a>
+      <a href="#contact" class="brand-modal-link" data-close-brand-modal>프로젝트 문의하기</a>
+    </div>
+  </div>
+</div>
 
 <!-- ============== PORTFOLIO MODAL ============== -->
 <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
@@ -2742,17 +2992,13 @@ section { padding: 120px 0; }
 
 <!-- ============== FLOATING CONTACT FAB ============== -->
 <div class="fab-wrap" id="fabWrap">
-  <a class="fab-sub" href="tel:01000000000">
+  <a class="fab-sub" href="#contact">
+    <span class="tip">문의 폼</span>
+    <span class="btn">📝</span>
+  </a>
+  <a class="fab-sub" href="tel:01046478835">
     <span class="tip">전화 문의</span>
     <span class="btn">📞</span>
-  </a>
-  <a class="fab-sub" href="#">
-    <span class="tip">네이버 예약</span>
-    <span class="btn">🟢</span>
-  </a>
-  <a class="fab-sub" href="#">
-    <span class="tip">카카오톡 상담</span>
-    <span class="btn">💛</span>
   </a>
   <a class="fab-sub" href="mailto:hello@creait.kr">
     <span class="tip">이메일 문의</span>
@@ -2789,6 +3035,41 @@ document.querySelectorAll('[data-mclose]').forEach(a => {
     hamburger.classList.remove('open');
     mobileMenu.classList.remove('open');
     document.body.style.overflow = '';
+  });
+});
+
+/* ============== 브랜드 소개 모달 ============== */
+const brandModalBackdrop = document.getElementById('brandModalBackdrop');
+const brandModalClose = document.getElementById('brandModalClose');
+
+function openBrandModal() {
+  if (!brandModalBackdrop) return;
+  brandModalBackdrop.classList.add('open');
+  brandModalBackdrop.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBrandModal() {
+  if (!brandModalBackdrop) return;
+  brandModalBackdrop.classList.remove('open');
+  brandModalBackdrop.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('[data-open-brand-modal]').forEach((trigger) => {
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    openBrandModal();
+  });
+});
+
+brandModalClose?.addEventListener('click', closeBrandModal);
+brandModalBackdrop?.addEventListener('click', (event) => {
+  if (event.target === brandModalBackdrop) closeBrandModal();
+});
+document.querySelectorAll('[data-close-brand-modal]').forEach((trigger) => {
+  trigger.addEventListener('click', () => {
+    closeBrandModal();
   });
 });
 
@@ -3669,6 +3950,10 @@ mNext.addEventListener('click', () => { if (currentIdx < modalData.length - 1) r
 document.addEventListener('fullscreenchange', syncFullscreenUi);
 document.addEventListener('webkitfullscreenchange', syncFullscreenUi);
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && brandModalBackdrop?.classList.contains('open')) {
+    closeBrandModal();
+    return;
+  }
   if (!backdrop.classList.contains('open')) return;
   if (e.key === 'Escape') closeModal();
   if (mVideo.classList.contains('gallery-mode')) {
