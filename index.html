@@ -801,12 +801,12 @@ section { padding: 120px 0; }
   display: flex;
 }
 .trusted-logo-card {
-  width: var(--slot-width, clamp(148px, 15vw, 220px));
+  width: auto;
   height: 92px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 14px;
+  padding: 8px 12px;
   flex-shrink: 0;
   transition: transform 0.28s ease, opacity 0.28s ease;
 }
@@ -817,7 +817,7 @@ section { padding: 120px 0; }
   display: block;
   width: auto;
   height: auto;
-  max-width: 100%;
+  max-width: var(--logo-max-width, var(--slot-width, clamp(148px, 15vw, 220px)));
   max-height: var(--logo-height, 58px);
   object-fit: contain;
 }
@@ -839,11 +839,12 @@ section { padding: 120px 0; }
   }
   .trusted-sequence { gap: 14px; padding-right: 14px; }
   .trusted-logo-card {
-    width: var(--slot-width-mobile, 148px);
+    width: auto;
     height: 82px;
     padding: 6px 8px;
   }
   .trusted-logo-card img {
+    max-width: var(--logo-max-width-mobile, var(--slot-width-mobile, 148px));
     max-height: var(--logo-height-mobile, 44px);
   }
 }
