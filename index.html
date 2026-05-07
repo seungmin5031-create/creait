@@ -2064,7 +2064,7 @@ section { padding: 120px 0; }
 <!-- ============== HERO ============== -->
 <header class="hero" id="top">
   <div class="hero-video-wrap" aria-hidden="true">
-    <video class="hero-video" id="heroVideo" autoplay muted playsinline preload="auto" poster="assets/showreel-poster.jpg">
+    <video class="hero-video" id="heroVideo" muted playsinline preload="auto" poster="assets/showreel-poster.jpg">
       <source src="showreel.mp4" type="video/mp4" />
     </video>
     <div class="hero-video-poster" aria-hidden="true"></div>
@@ -2569,7 +2569,10 @@ document.querySelectorAll('.fade-up').forEach(el => fadeObs.observe(el));
 /* ============== 히어로 쇼릴 시작 연출 ============== */
 const hero = document.querySelector('.hero');
 const heroVideo = document.getElementById('heroVideo');
-const heroVideoIntroOffset = 1;
+const heroVideoIntroOffset = 0.18;
+const heroVideoRevealDelayMs = 180;
+let heroVideoRevealQueued = false;
+let heroVideoStartRequested = false;
 
 function revealHeroVideo() {
   if (!hero || hero.classList.contains('video-started')) return;
@@ -2583,34 +2586,68 @@ function getHeroVideoStartTime() {
   return Math.min(heroVideoIntroOffset, Math.max(0, duration - 0.25));
 }
 
-function playHeroVideo() {
-  if (!heroVideo) return;
-  heroVideo.play().catch(() => {});
-}
+function queueHeroVideoReveal() {
+  if (!hero || !heroVideo || hero.classList.contains('video-started') || heroVideoRevealQueued) return;
 
-function restartHeroVideo() {
-  if (!heroVideo) return;
+  heroVideoRevealQueued = true;
+  const reveal = () => {
+    window.setTimeout(revealHeroVideo, heroVideoRevealDelayMs);
+  };
 
-  const startTime = getHeroVideoStartTime();
-  if (startTime <= 0) {
-    playHeroVideo();
+  if (typeof heroVideo.requestVideoFrameCallback === 'function') {
+    heroVideo.requestVideoFrameCallback(() => reveal());
     return;
   }
 
-  const handleSeeked = () => playHeroVideo();
-  heroVideo.addEventListener('seeked', handleSeeked, { once: true });
-  heroVideo.currentTime = startTime;
+  window.requestAnimationFrame(reveal);
+}
+
+function seekHeroVideo(startTime) {
+  if (!heroVideo || startTime <= 0) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    let settled = false;
+    let fallbackTimer = 0;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(fallbackTimer);
+      resolve();
+    };
+
+    fallbackTimer = window.setTimeout(finish, 240);
+    heroVideo.addEventListener('seeked', finish, { once: true });
+    heroVideo.currentTime = startTime;
+  });
+}
+
+async function startHeroVideo() {
+  if (!heroVideo) return;
+  const startTime = getHeroVideoStartTime();
+  await seekHeroVideo(startTime);
+  await heroVideo.play().catch(() => {});
+}
+
+function bootHeroVideo() {
+  if (!heroVideo || heroVideoStartRequested) return;
+  heroVideoStartRequested = true;
+  startHeroVideo().catch(() => {
+    heroVideoStartRequested = false;
+  });
 }
 
 if (hero && heroVideo) {
-  heroVideo.addEventListener('loadedmetadata', restartHeroVideo, { once: true });
-  if (heroVideo.readyState >= 1) restartHeroVideo();
+  heroVideo.defaultMuted = true;
 
-  heroVideo.addEventListener('playing', () => {
-    window.setTimeout(revealHeroVideo, 120);
+  heroVideo.addEventListener('loadeddata', bootHeroVideo, { once: true });
+  heroVideo.addEventListener('canplay', bootHeroVideo, { once: true });
+  if (heroVideo.readyState >= 2) bootHeroVideo();
+
+  heroVideo.addEventListener('playing', queueHeroVideoReveal);
+
+  heroVideo.addEventListener('ended', () => {
+    startHeroVideo();
   });
-
-  heroVideo.addEventListener('ended', restartHeroVideo);
 }
 
 /* ============== 포트폴리오 데이터 / 필터 ============== */

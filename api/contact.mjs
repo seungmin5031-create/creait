@@ -7,6 +7,7 @@ const FALLBACK_TO_EMAIL = 'hello@creait.kr';
 const FALLBACK_FROM_EMAIL = 'CREAIT Contact <hello@creait.kr>';
 const RESEND_ONBOARDING_FROM_EMAIL = 'CREAIT Contact <onboarding@resend.dev>';
 const EMAIL_ENDPOINT = 'https://api.resend.com/emails';
+const RESEND_STATUS_POLL_DELAYS_MS = [200, 600];
 
 function json(body, init = {}) {
   return new Response(JSON.stringify(body), {
@@ -98,14 +99,18 @@ export function GET() {
   return json({ ok: true, message: 'Use POST to submit contact inquiries.' });
 }
 
+function buildResendHeaders(resendApiKey) {
+  return {
+    Authorization: `Bearer ${resendApiKey}`,
+    'Content-Type': 'application/json',
+    'User-Agent': 'creait-contact-form/1.0'
+  };
+}
+
 async function sendWithResend({ resendApiKey, fromEmail, toEmail, subject, payload }) {
   const resendResponse = await fetch(EMAIL_ENDPOINT, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      'Content-Type': 'application/json',
-      'User-Agent': 'creait-contact-form/1.0'
-    },
+    headers: buildResendHeaders(resendApiKey),
     body: JSON.stringify({
       from: fromEmail,
       to: [toEmail],
@@ -118,6 +123,48 @@ async function sendWithResend({ resendApiKey, fromEmail, toEmail, subject, paylo
 
   const resendResult = await resendResponse.json().catch(() => ({}));
   return { resendResponse, resendResult };
+}
+
+async function fetchEmailStatus({ resendApiKey, emailId }) {
+  const response = await fetch(`${EMAIL_ENDPOINT}/${encodeURIComponent(emailId)}`, {
+    headers: buildResendHeaders(resendApiKey)
+  });
+
+  const result = await response.json().catch(() => ({}));
+  return { response, result };
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function findFinalEmailStatus({ resendApiKey, emailId }) {
+  if (!emailId) return null;
+
+  for (let attempt = 0; attempt <= RESEND_STATUS_POLL_DELAYS_MS.length; attempt += 1) {
+    try {
+      const { response, result } = await fetchEmailStatus({ resendApiKey, emailId });
+      if (response.ok) {
+        const lastEvent = String(result?.last_event || '').trim().toLowerCase();
+        if (lastEvent && lastEvent !== 'queued' && lastEvent !== 'scheduled') {
+          return result;
+        }
+      }
+    } catch (error) {
+      console.warn('[contact] Failed to fetch Resend email status.', {
+        emailId,
+        message: error instanceof Error ? error.message : String(error)
+      });
+      return null;
+    }
+
+    const delayMs = RESEND_STATUS_POLL_DELAYS_MS[attempt];
+    if (delayMs) {
+      await wait(delayMs);
+    }
+  }
+
+  return null;
 }
 
 export async function POST(request) {
@@ -239,5 +286,24 @@ export async function POST(request) {
     return json({ error: errorMessage }, { status: 502 });
   }
 
-  return json({ ok: true, id: resendResult?.id || null });
+  const emailId = resendResult?.id || null;
+  const finalStatus = await findFinalEmailStatus({ resendApiKey, emailId });
+  const lastEvent = String(finalStatus?.last_event || '').trim().toLowerCase();
+
+  if (lastEvent === 'suppressed') {
+    const suppressedMessage =
+      finalStatus?.suppressed?.message ||
+      `문의 메일이 수신 주소(${toEmail})의 Resend suppression list 때문에 전달되지 않았습니다. Resend Dashboard에서 suppression reason을 확인하고 해제 후 다시 시도해주세요.`;
+
+    console.error('[contact] Resend accepted the request but suppressed delivery.', {
+      emailId,
+      toEmail,
+      suppressedType: finalStatus?.suppressed?.type || null,
+      suppressedMessage
+    });
+
+    return json({ error: suppressedMessage }, { status: 502 });
+  }
+
+  return json({ ok: true, id: emailId, lastEvent: lastEvent || null });
 }
