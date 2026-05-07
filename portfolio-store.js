@@ -10,6 +10,7 @@
   };
   const BG_KEYS = ['bg-1', 'bg-2', 'bg-3', 'bg-4', 'bg-5', 'bg-6', 'bg-7', 'bg-8'];
   const DEFAULT_FEATURED_LIMIT = 15;
+  const FEATURED_CLIENT_EXCLUSIONS = new Set(['순천시영상미디어센터']);
 
   function slugify(value = '') {
     return String(value)
@@ -83,7 +84,10 @@
   }
 
   function getFeaturedItems(items, limit = DEFAULT_FEATURED_LIMIT) {
-    return normalizeCollection(items).filter((item) => item.featured !== false).slice(0, limit);
+    return normalizeCollection(items)
+      .filter((item) => item.featured !== false)
+      .filter((item) => !FEATURED_CLIENT_EXCLUSIONS.has(item.client))
+      .slice(0, limit);
   }
 
   function getCategoryTabs(items) {
