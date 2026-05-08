@@ -1968,6 +1968,28 @@ section { padding: 120px 0; }
   opacity: 0.3;
   cursor: not-allowed;
 }
+.modal-external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid rgba(232,255,0,0.22);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  background: rgba(232,255,0,0.08);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.modal-external-link:hover {
+  background: rgba(232,255,0,0.14);
+  border-color: rgba(232,255,0,0.36);
+  transform: translateY(-1px);
+}
+.modal-external-link[hidden] {
+  display: none;
+}
 .modal-counter {
   font-size: 0.85rem;
   color: var(--fg-mute);
@@ -1976,6 +1998,32 @@ section { padding: 120px 0; }
   letter-spacing: 0.02em;
 }
 .modal-counter .current { color: var(--accent); font-size: 1rem; }
+@media (max-width: 720px) {
+  .modal-backdrop {
+    padding: 0;
+    align-items: stretch;
+  }
+  .modal {
+    max-width: none;
+    max-height: 100dvh;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .modal-close {
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+  }
+  .modal-footer {
+    align-items: stretch;
+  }
+  .modal-external-link {
+    justify-content: center;
+    width: 100%;
+    order: 3;
+  }
+}
 
 /* ============== Reduced motion ============== */
 @media (prefers-reduced-motion: reduce) {
@@ -2433,6 +2481,7 @@ section { padding: 120px 0; }
           <button id="modalPrev">← Prev</button>
           <button id="modalNext">Next →</button>
         </div>
+        <a class="modal-external-link" id="modalExternalLink" href="#" target="_blank" rel="noopener noreferrer" hidden>유튜브에서 보기 ↗</a>
         <div class="modal-counter">
           <span class="current" id="modalCurrent">01</span> / <span id="modalTotal">08</span>
         </div>
@@ -2707,6 +2756,7 @@ const mDesc = document.getElementById('modalDesc');
 const mCredits = document.getElementById('modalCredits');
 const mCurrent = document.getElementById('modalCurrent');
 const mTotal = document.getElementById('modalTotal');
+const mExternalLink = document.getElementById('modalExternalLink');
 mTotal.textContent = String(modalData.length).padStart(2, '0');
 
 let currentIdx = 0;
@@ -2771,6 +2821,17 @@ function buildYouTubeEmbedUrl(videoId) {
     modestbranding: '1'
   }).toString();
   return embedUrl.toString();
+}
+
+function syncExternalVideoLink(url, isGallery = false) {
+  if (isGallery || !url) {
+    mExternalLink.hidden = true;
+    mExternalLink.removeAttribute('href');
+    return;
+  }
+
+  mExternalLink.href = url;
+  mExternalLink.hidden = false;
 }
 
 function ensureYouTubeApi() {
@@ -3229,6 +3290,7 @@ function renderModal(i) {
   currentIdx = i;
   const isGallery = hasGalleryContent(d);
   currentVideoUrl = isGallery ? '' : d.videoUrl || '';
+  syncExternalVideoLink(currentVideoUrl, isGallery);
   mBg.style.background = d.thumb
     ? `linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.45)), url('${d.thumb}') center/cover no-repeat`
     : bgGradients[d.bg];
