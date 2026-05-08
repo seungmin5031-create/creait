@@ -2206,6 +2206,21 @@ section { padding: 120px 0; }
   pointer-events: auto;
   cursor: default;
 }
+.modal-video.native-mobile-player {
+  cursor: default;
+}
+.modal-video.native-mobile-player .v-bg,
+.modal-video.native-mobile-player .modal-play,
+.modal-video.native-mobile-player .modal-tag,
+.modal-video.native-mobile-player .modal-controls,
+.modal-video.native-mobile-player::after {
+  opacity: 0;
+  pointer-events: none;
+}
+.modal-video.native-mobile-player .modal-video-frame {
+  opacity: 1;
+  pointer-events: auto;
+}
 .modal-video.gallery-mode {
   cursor: default;
 }
@@ -3303,6 +3318,23 @@ function getYouTubeVideoId(url) {
   }
 }
 
+function shouldUseNativeMobilePlayer() {
+  return window.matchMedia('(pointer: coarse)').matches;
+}
+
+function buildYouTubeEmbedUrl(videoId) {
+  const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+  embedUrl.search = new URLSearchParams({
+    autoplay: '1',
+    controls: '1',
+    rel: '0',
+    playsinline: '1',
+    fs: '1',
+    modestbranding: '1'
+  }).toString();
+  return embedUrl.toString();
+}
+
 function ensureYouTubeApi() {
   if (window.YT?.Player) return Promise.resolve(window.YT);
   if (youtubeApiPromise) return youtubeApiPromise;
@@ -3460,6 +3492,10 @@ function scheduleControlsHide(delay = 2000) {
 
 function showPlayerControls(autoHide = false, delay = 2000) {
   if (!mVideo.classList.contains('playing')) return;
+  if (mVideo.classList.contains('native-mobile-player')) {
+    setControlsVisible(false);
+    return;
+  }
 
   clearControlsHideTimer();
   mVideo.classList.remove('controls-hidden');
@@ -3472,6 +3508,10 @@ function showPlayerControls(autoHide = false, delay = 2000) {
 function pinPlayerControls() {
   clearControlsHideTimer();
   if (!mVideo.classList.contains('playing')) return;
+  if (mVideo.classList.contains('native-mobile-player')) {
+    setControlsVisible(false);
+    return;
+  }
   mVideo.classList.remove('controls-hidden');
   setControlsVisible(true);
 }
@@ -3577,6 +3617,7 @@ function destroyYouTubePlayer() {
 function stopModalVideo() {
   destroyYouTubePlayer();
   mVideo.classList.remove('playing');
+  mVideo.classList.remove('native-mobile-player');
   mFrame.innerHTML = '';
   mFrame.setAttribute('aria-hidden', 'true');
   resetPlayerUi();
@@ -3623,6 +3664,23 @@ async function playCurrentVideo() {
 
   if (!videoId) {
     window.open(currentVideoUrl, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  if (shouldUseNativeMobilePlayer()) {
+    destroyYouTubePlayer();
+
+    const iframe = document.createElement('iframe');
+    iframe.src = buildYouTubeEmbedUrl(videoId);
+    iframe.title = modalData[currentIdx]?.title || 'YouTube video player';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen';
+    iframe.allowFullscreen = true;
+    iframe.playsInline = true;
+
+    mFrame.replaceChildren(iframe);
+    mFrame.setAttribute('aria-hidden', 'false');
+    mVideo.classList.add('playing', 'native-mobile-player');
+    setControlsVisible(false);
     return;
   }
 
@@ -3718,7 +3776,7 @@ function toggleModalFullscreen() {
 }
 
 function handleVideoSurfaceClick(event) {
-  if (mVideo.classList.contains('gallery-mode')) return;
+  if (mVideo.classList.contains('gallery-mode') || mVideo.classList.contains('native-mobile-player')) return;
   if (event.target.closest('.modal-controls') || event.target.closest('.modal-play')) return;
   if (!currentVideoUrl) return;
   togglePlayerPlayback();
@@ -3745,6 +3803,9 @@ function renderModal(i) {
   mDesc.textContent = d.desc;
   mPlay.disabled = !currentVideoUrl;
   resetPlayerUi(parseDurationLabel(d.duration));
+  if (!isGallery && !shouldUseNativeMobilePlayer() && getYouTubeVideoId(currentVideoUrl)) {
+    ensureYouTubeApi().catch(() => {});
+  }
   if (isGallery) activateGallery(d);
   mCurrent.textContent = String(i + 1).padStart(2, '0');
   mCredits.innerHTML = Object.entries(d.credits)
