@@ -533,6 +533,12 @@ section { padding: 120px 0; }
   aspect-ratio: 16 / 9;
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
+@media (min-width: 768px) {
+  .work-card.work-card--span-2 { grid-column: span 2; }
+}
+@media (min-width: 1024px) {
+  .work-card.work-card--span-full { grid-column: 1 / -1; }
+}
 @media (max-width: 767px) {
   .work-card { aspect-ratio: 16 / 9; }
 }
@@ -3026,6 +3032,46 @@ let filterTabs = [];
 let workCards = [];
 let cards = [];
 let modalData = [];
+let workGridLayoutFrame = 0;
+
+function getWorksGridColumnCount() {
+  if (window.innerWidth <= 767) return 1;
+  if (window.innerWidth <= 1023) return 2;
+  return 3;
+}
+
+function layoutVisibleWorkCards() {
+  workCards.forEach((card) => {
+    card.classList.remove('work-card--span-2', 'work-card--span-full');
+  });
+
+  const visibleCards = workCards.filter((card) => !card.classList.contains('hidden'));
+  const columnCount = getWorksGridColumnCount();
+  if (columnCount <= 1) return;
+
+  const remainder = visibleCards.length % columnCount;
+  if (!remainder) return;
+
+  const lastCard = visibleCards[visibleCards.length - 1];
+  if (!lastCard) return;
+
+  if (columnCount === 3 && remainder === 1) {
+    lastCard.classList.add('work-card--span-full');
+    return;
+  }
+
+  if ((columnCount === 3 && remainder === 2) || (columnCount === 2 && remainder === 1)) {
+    lastCard.classList.add('work-card--span-2');
+  }
+}
+
+function scheduleWorkGridLayout() {
+  if (workGridLayoutFrame) return;
+  workGridLayoutFrame = window.requestAnimationFrame(() => {
+    workGridLayoutFrame = 0;
+    layoutVisibleWorkCards();
+  });
+}
 
 function renderFilterTabs(items) {
   const tabs = window.CreaitPortfolioStore.getCategoryTabs(items);
@@ -3070,6 +3116,7 @@ function renderSelectedWorks(items) {
   workCards = Array.from(worksGrid.querySelectorAll('.work-card'));
   cards = workCards;
   workCards.forEach((card) => fadeObs.observe(card));
+  scheduleWorkGridLayout();
 }
 
 function applyWorksFilter() {
@@ -3079,7 +3126,10 @@ function applyWorksFilter() {
     const matches = activeFilter === 'all' || card.dataset.category === activeFilter;
     card.classList.toggle('hidden', !matches);
   });
+  scheduleWorkGridLayout();
 }
+
+window.addEventListener('resize', scheduleWorkGridLayout);
 
 /* ============== 카운트업 ============== */
 const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
