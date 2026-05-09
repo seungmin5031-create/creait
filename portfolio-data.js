@@ -125,6 +125,7 @@ window.portfolioData = [
     credits: { Client: '순천시영상미디어센터', Focus: '성과 기록', Platform: 'YouTube', Type: 'Report Film' }
   },
   {
+    featured: true,
     cat: 'promotion', displayCat: 'CAMPAIGN', client: '두드림 영화관', title: '두드림 영화관 관람 문화 캠페인',
     year: '2024', duration: '00:11+', format: '16:9', bg: 'bg-8',
     thumb: 'assets/portfolio/thumb-8ETdLbwAP90.png',
